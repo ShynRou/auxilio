@@ -1,0 +1,24 @@
+{
+  "name": "auxilio",
+  "version": "0.0.1",
+  "description": "multi-channel personal assistant",
+  "main": "api/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShynRou/auxilio.git"
+  },
+  "keywords": [
+	"assistant",
+    "angular",
+    "hapi"
+  ],
+  "author": "Dustin \"ShynRou\" Hagemeier",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShynRou/auxilio/issues"
+  },
+  "homepage": "https://github.com/ShynRou/auxilio#readme"
+}

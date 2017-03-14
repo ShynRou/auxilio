@@ -1,0 +1,43 @@
+#log-wrapper,
+#log,
+#input {
+  display: block;
+  width: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+#log-wrapper {
+  flex: 0 0 auto;
+  height: calc(100vh - 70px);
+  color: #eeeeee;
+  background-color: #444444;
+  padding: 10px;
+}
+
+#input {
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 10px;
+  margin: 0;
+  border: none;
+  outline: none;
+  font-size: 1.5rem;
+  color: #cdf9ce;
+  background-color: #222222;
+}
+
+#input::placeholder,
+#input::-webkit-input-placeholder,
+#input::-moz-placeholder,
+#input:-ms-input-placeholder ,
+#input:-moz-placeholder{
+  color: #448822;
+}
+
