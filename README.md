@@ -13,3 +13,6 @@ planned routes:
 - [ ] **/chat/** chatbot page
 - [ ] **/manager/** angular page based manager
 
+
+---------
+Published under GNU GPLv3 License
