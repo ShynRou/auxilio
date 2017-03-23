@@ -1,6 +1,6 @@
 module.exports = {
-  method: ['GET'],
-  path: '/',
+  method: ['POST'],
+  path: '/api/',
   config: {
     //auth: { mode: 'try' },
   },

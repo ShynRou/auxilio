@@ -13,4 +13,4 @@ server.start((err) => {
   console.log(`Server running at: ${server.info.uri}`);
 });
 
-require('./api/routes')(server);
+require('./routes')(server);
