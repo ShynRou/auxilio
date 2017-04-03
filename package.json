@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/ShynRou/auxilio#readme",
   "dependencies": {
-    "hapi": "^16.1.0"
+    "hapi": "^16.1.0",
+    "inert": "^4.2.0"
   }
 }

@@ -3,11 +3,19 @@ const log = document.getElementById('log');
 
 
 const sendMessage = function (message) {
-  // TODO: add your send Function Here;
   return new Promise((resolve,reject) => {
-    setTimeout(() => resolve(message), 500);
+    var request = new XMLHttpRequest();
+    request.open("POST","/api/");
+    request.addEventListener('load', function(event) {
+      if (request.status >= 200 && request.status < 300) {
+        resolve(request.responseText);
+      } else {
+        reject(request.responseText);
+      }
+    });
+    request.send(message);
   });
-}
+};
 
 input.onkeydown = (event) => {
   if(event && event.keyCode === 13) {
@@ -17,7 +25,7 @@ input.onkeydown = (event) => {
     sendMessage(safeInput)
       .then(
         (answer) => {
-          log.innerHTML = log.innerHTML + '<br>' + safeInput; 
+          log.innerHTML = log.innerHTML + '<br>' + snarkdown(answer);
         })
       .catch(
         (err) => {

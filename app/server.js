@@ -1,11 +1,9 @@
-
 const Hapi = require('hapi');
 
 const server = new Hapi.Server();
 server.connection({ port: 8080, host: 'localhost' });
 
 server.start((err) => {
-
   if (err) {
     throw err;
   }
@@ -13,4 +11,12 @@ server.start((err) => {
   console.log(`Server running at: ${server.info.uri}`);
 });
 
-require('./routes')(server);
+server.register(require('inert'), (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    require('./routes')(server);
+  }
+);
