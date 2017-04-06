@@ -11,6 +11,10 @@ server.start((err) => {
   console.log(`Server running at: ${server.info.uri}`);
 });
 
+
+server.register(require('./plugins/storage/localstorage'));
+
+
 server.register(require('inert'), (err) => {
     if (err) {
       console.error(err);
