@@ -2,7 +2,12 @@
 var localstorage = {
   register: function (server, options, next) {
     var LocalStorage = require('node-localstorage').LocalStorage;
-    server.app.localStorage = new LocalStorage('./storage'); // TODO: make configurable
+    const store = new LocalStorage('./storage');
+    for (let key in store) {
+      server.expose(key, store[key]);
+    }
+
+    next();
   }
 };
 

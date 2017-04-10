@@ -11,9 +11,13 @@ server.start((err) => {
   console.log(`Server running at: ${server.info.uri}`);
 });
 
-
-server.register(require('./plugins/storage/localstorage'));
-
+server.register(require('./plugins/localstorage/localstorage'));
+server.register({
+  register: require('./plugins/langParser/langParser'),
+  options: {
+    dictionary: './app/resource/dict/en/dictionary_full_by_category.json'
+  }
+});
 
 server.register(require('inert'), (err) => {
     if (err) {
