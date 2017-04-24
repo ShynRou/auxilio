@@ -2,7 +2,7 @@ module.exports = {
   method: ['GET'],
   path: '/api/',
   config: {
-    //auth: { mode: 'try' },
+    // auth: { mode: 'try' },
   },
   description: 'replies API manual',
   handler: function (request, reply) {

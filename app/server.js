@@ -12,6 +12,7 @@ server.start((err) => {
 });
 
 server.register(require('./plugins/localstorage/localstorage'));
+server.register(require('./plugins/commander/commander'));
 server.register({
   register: require('./plugins/langParser/langParser'),
   options: {

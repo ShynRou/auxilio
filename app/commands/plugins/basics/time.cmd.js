@@ -5,8 +5,10 @@ module.exports = {
   plugin: 'basics',
   id: 'time',
   commands: [
-    'what * time',
-    'tell * time'
+    'what ?is,\'s ?the time',
+    'what time ?is,\'s ?it',
+    'tell ?me ?the time',
+    'tell ?me ?what $time ?it ?is,\'s'
   ],
   handlers: {
     entry: function (request, rawRequest, parseRequest, reply) {
