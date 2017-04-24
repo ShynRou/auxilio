@@ -15,7 +15,7 @@ server.register(require('./plugins/localstorage/localstorage'));
 server.register({
   register: require('./plugins/langParser/langParser'),
   options: {
-    dictionary: './app/resource/dict/en/dictionary_full_by_category.json'
+    dictionary: './app/resource/dict/en/dictionary_custom.json'
   }
 });
 
@@ -25,6 +25,7 @@ server.register(require('inert'), (err) => {
       return;
     }
 
+    require('./commands')(server);
     require('./routes')(server);
   }
 );

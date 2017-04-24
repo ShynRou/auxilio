@@ -1,0 +1,28 @@
+{
+  "interrogative": [
+    "how",
+    "what",
+    "when",
+    "where",
+    "which",
+    "who",
+    "whom",
+    "whose",
+    "why"
+  ],
+  "verbs": [
+    "add",
+    "cancel",
+    "change",
+    "close",
+    "create",
+    "delete",
+    "open",
+    "remove",
+    "save",
+    "show",
+    "start",
+    "stop",
+    "view"
+  ]
+}
