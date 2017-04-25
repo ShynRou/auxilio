@@ -11,19 +11,19 @@ module.exports = {
     'tell ?me ?what $time ?it ?is,\'s'
   ],
   handlers: {
-    entry: function (request, rawRequest, parseRequest, reply) {
+    entry: (request, rawRequest, parseRequest) => {
 
       let date = new Date();
 
       let h = date.getHours();
-      h = h == 0 ? (h-1)%12+1 : 12;
+      h = h == 0 ? 12 : (h-1)%12+1;
       let m = date.getMinutes();
 
-      reply({
+      return {
         data: date.getTime(),
         text: date.toLocaleTimeString(),
-        speech: `It's ${n2w(m)} past ${n2w(h)}`
-      })
+        speech: `It's ${n2w.toWords(m)} past ${n2w.toWords(h)}`
+      };
     }
   }
 

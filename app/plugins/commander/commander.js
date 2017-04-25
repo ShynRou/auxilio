@@ -2,7 +2,6 @@
 
 const commander = {};
 commander.plugins = {};
-commander.cmds = [];
 
 
 commander.register = function (cmd) {
@@ -14,8 +13,34 @@ commander.register = function (cmd) {
   commander.plugins[cmd.plugin][cmd.id] = cmd;
 };
 
-commander.findBest = function (fracture) {
+commander.findBest = function (raw, parsed) {
 
+  if(!raw || !parsed) {
+    return null;
+  }
+
+  // CHECK RAW FOR COMMAND
+  let cmdMatch = raw.match(/^[\/@>!]([\w\d\-_]+).([\w\d\-_]+).*$/);
+
+  if(cmdMatch) {
+    let cmd = commander.plugins[cmdMatch[1]][cmdMatch[2]];
+
+    if(cmd) {
+      return [{cmd, scoreRequired: 1, scoreOptional: 1}];
+    }
+  }
+};
+
+commander.parse = function (request, raw, parsed) {
+  if(!raw || !parsed) {
+    return "Sorry, did you say something?";
+  }
+
+  let cmds = commander.findBest(raw, parsed);
+  if(cmds && cmds.length > 0) {
+    console.log(cmds);
+    return cmds[0].cmd.handlers.entry(request, raw, parsed);
+  }
 };
 
 // REGISTER PLUGIN =====================================================

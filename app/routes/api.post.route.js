@@ -10,9 +10,11 @@ module.exports = {
     const result = {
       request: request.payload,
       parsed: request.server.plugins.langParser.fracture(request.payload),
-      answer: request.server.plugins.langParser.categorizeWord(request.payload),
     };
 
-    reply(result);
+    result.answer = request.server.plugins.commander.parse(request, result.request, result.parsed);
+
+
+    return reply(result);
   }
 };
