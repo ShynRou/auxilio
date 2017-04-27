@@ -4,10 +4,10 @@ const n2w = require('number-to-words');
 module.exports = {
   id: 'time',
   commands: [
-    'what ?is,\'s ?the !time',
-    'what !time ?is,\'s ?it',
-    '!tell ?me ?the time',
-    '!tell ?me ?what $time ?it ?is,\'s'
+    '!what is,\'s the !time',
+    '!what !time is,\'s it',
+    '!tell me the !time',
+    '!tell me &what !time it is,\'s'
   ],
   handlers: {
     entry: (request, rawRequest, parseRequest) => {
