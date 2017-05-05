@@ -19,6 +19,7 @@ body {
   color: #eeeeee;
   background-color: #444444;
   padding: 10px;
+  overflow: scroll;
 }
 
 #input {
@@ -41,3 +42,6 @@ body {
   color: #448822;
 }
 
+ol {
+  border: 2px solid #444466;
+}
