@@ -9,9 +9,9 @@ Look at implementations of auxilio:
 
 
 ## Roadmap:
-[ ] **/** text based action call
-[ ] **/list/:plugin?** list all plugins / actions of :plugin
-[ ] **/do/:plugin/:action/:state** manual action calls
+- [ ] **/** text based action call
+- [ ] **/list/:plugin?** list all plugins / actions of :plugin
+- [ ] **/do/:plugin/:action/:state** manual action calls
 
 
 ---------
