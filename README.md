@@ -1,17 +1,17 @@
-# auxilio
-multi-channel personal assistant
+# auxilio API
+multi-channel personal assistant API
 
-planned interface support:
-- rest-api
-- web-application (Angular2)
-- web-chat
+Look at implementations of auxilio:
 
-planned routes:
-- [ ] **/** text based action call
-- [ ] **/api/list/:plugin?** list all plugins / actions of :plugin
-- [ ] **/api/do/:plugin/:action/:state** manual action calls
-- [ ] **/chat/** chatbot page
-- [ ] **/manager/** angular page based manager
+- [Auxilio Chat](https://github.com/ShynRou/auxilio-chat) // Text based communication with your assistant
+- [Auxilio App](https://github.com/ShynRou/auxilio-app)  // Direct access to all functionality
+
+
+
+## Roadmap:
+[ ] **/** text based action call
+[ ] **/list/:plugin?** list all plugins / actions of :plugin
+[ ] **/do/:plugin/:action/:state** manual action calls
 
 
 ---------
