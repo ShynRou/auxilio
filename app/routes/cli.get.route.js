@@ -1,13 +1,13 @@
 module.exports = {
   method: ['GET'],
-  path: '/chat/{param*}',
+  path: '/cli/{param*}',
   config: {
     //auth: { mode: 'try' },
   },
-  description: 'chat for text based api',
+  description: 'simple web CLI',
   handler: {
     directory: {
-      path: 'app/www/chat'
+      path: 'app/www/cli'
     }
   }
 };

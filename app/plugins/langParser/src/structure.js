@@ -22,7 +22,6 @@ structure.fracture = (text) => {
     }
   );
 
-      console.log(result);
   return result;
 };
 
