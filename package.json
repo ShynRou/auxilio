@@ -1,7 +1,7 @@
 {
   "name": "auxilio",
   "version": "0.0.1",
-  "description": "multi-channel personal assistant",
+  "description": "personal assistant api",
   "main": "api/server.js",
   "scripts": {
     "start": "node app/server.js",
@@ -24,9 +24,11 @@
   },
   "homepage": "https://github.com/ShynRou/auxilio#readme",
   "dependencies": {
+    "boom": "^5.1.0",
     "glob": "^7.1.1",
     "hapi": "^16.1.0",
     "inert": "^4.2.0",
+    "joi": "^10.5.2",
     "node-localstorage": "^1.3.0",
     "nodemon": "^1.11.0",
     "number-to-words": "^1.2.3"
