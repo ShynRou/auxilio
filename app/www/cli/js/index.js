@@ -18,6 +18,7 @@ const toSnarkdown = function ( obj, indent = '' ) {
   switch (typeof obj) {
     case 'string':
     case 'number':
+    case 'boolean':
       result += indent+obj;
       break;
     case 'object':

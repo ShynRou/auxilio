@@ -4,7 +4,7 @@ const n2w = require('number-to-words');
 module.exports = {
   id: 'date',
   handlers: {
-    entry: (reply, session, param) => {
+    entry: (resolve, reject, session, param) => {
 
       let date = new Date();
 
@@ -24,7 +24,7 @@ module.exports = {
         "december"
       ][date.getMonth()+1];
 
-      return reply({
+      return resolve({
         data: date.getTime(),
         text: date.toLocaleDateString(),
         speech: `It's the ${n2w.toWordsOrdinal(day)} of ${month}.`

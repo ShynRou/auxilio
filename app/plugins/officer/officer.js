@@ -9,33 +9,36 @@ const WORD_TYPE = {
 
 
 officer.register = function (plugin) {
-  console.log(`${plugin.id} \t\t//${plugin.description}`);
+  console.log(`${plugin.id}${plugin.description ? ' \t\t//' + plugin.description : ''}`);
 
   officer.commands[plugin.id] = plugin;
 
   if (plugin.commands && plugin.commands.length > 0) {
     plugin.commands.forEach(command => {
-      officer[`${plugin.id}.${command.id}`] = command;
-      console.log(` |.${command.id} \t\t//${command.description}`);
+      officer.commands[`${plugin.id}.${command.id}`] = command;
+      console.log(` |.${command.id}${plugin.description ? ' \t\t//' + plugin.description : ''}`);
     });
   }
 };
 
 
 officer.call = function (request, reply, cmd, entryPoint = 'entry', param = {}) {
-  console.log(cmd, entryPoint, param);
   if (officer.commands[cmd]) {
     let command = officer.commands[cmd];
     if (command.handler) {
-      command.handler(reply, request.session, param);
-      return true;
+      return new Promise(
+        (resolve, reject) =>
+          command.handler(reply, request.session, param)
+      );
     }
     else if (command.handlers && command.handlers[entryPoint]) {
-      command.handlers[entryPoint](reply, request.session, param);
-      return true;
+      return new Promise(
+        (resolve, reject) =>
+        command.handlers[entryPoint](resolve, reject, request.session, param)
+      );
     }
   }
-  return false;
+  return null;
 };
 
 officer.callScript = function (request, reply, script) {
@@ -43,7 +46,6 @@ officer.callScript = function (request, reply, script) {
   console.log(script);
 
   if (script) {
-
     // MATCH COMMAND AND SEPERATE INTO 1:plugin, 2:command, 3:entry, 4: named params, 5: unnamed params
     let match = script.match(/\/?([\w_-]+)(?:\.([\w_-]+))?(?:\.([\w_-]+))?( +\-[\w_-]+(?:\=(?:\"[^\"]*\"|[^\s]+)?))*(?: +(.*))?/);
 
@@ -66,12 +68,12 @@ officer.callScript = function (request, reply, script) {
 
       return officer.call(request, reply, command, entry, param);
     }
-
   }
-
 
   return false;
 };
+
+officer
 
 
 // REGISTER PLUGIN =====================================================

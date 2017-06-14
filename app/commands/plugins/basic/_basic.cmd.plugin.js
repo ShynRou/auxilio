@@ -4,9 +4,9 @@ module.exports = {
     require('./time.cmd'),
     require('./date.cmd')
   ],
-  handler: (reply, session, param) => {
+  handler: (resolve, reject, session, param) => {
     const text = "I provide basic information and functionality, like the time and date.";
-    return reply({
+    return resolve({
       data: text,
       text: text,
       speech: text

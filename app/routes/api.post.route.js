@@ -13,10 +13,13 @@ module.exports = {
   description: 'basic text based action call',
   handler: function (request, reply) {
 
-    let cmdFound = request.server.plugins.officer.callScript(request, reply, request.payload );
+    let promise = request.server.plugins.officer.callScript(request, reply, request.payload );
 
-    if(!cmdFound) {
-      reply(Boom.badRequest());
+    if(promise) {
+      promise.then((result) => reply(result)).catch((error) => reply(result));
+    }
+    else {
+      return reply(Boom.badRequest('Command not found!'));
     }
   }
 };
