@@ -43,8 +43,6 @@ officer.call = function (request, reply, cmd, entryPoint = 'entry', param = {}) 
 
 officer.callScript = function (request, reply, script) {
 
-  console.log(script);
-
   if (script) {
     // MATCH COMMAND AND SEPERATE INTO 1:plugin, 2:command, 3:entry, 4: named params, 5: unnamed params
     let match = script.match(/\/?([\w_-]+)(?:\.([\w_-]+))?(?:\.([\w_-]+))?( +\-[\w_-]+(?:\=(?:\"[^\"]*\"|[^\s]+)?))*(?: +(.*))?/);
@@ -73,7 +71,7 @@ officer.callScript = function (request, reply, script) {
   return false;
 };
 
-officer
+
 
 
 // REGISTER PLUGIN =====================================================

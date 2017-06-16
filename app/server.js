@@ -11,8 +11,12 @@ server.start((err) => {
   console.log(`Server running at: ${server.info.uri}`);
 });
 
-server.register(require('./plugins/localstorage/localstorage'));
+// REGISTER:
+//  - Database (lokijs)
+server.register(require('./plugins/loki/loki'));
+//  - Command Manager (officer)
 server.register(require('./plugins/officer/officer'));
+//  - Language Parser (langParser)
 server.register({
   register: require('./plugins/langParser/langParser'),
   options: {
@@ -20,6 +24,7 @@ server.register({
   }
 });
 
+// INITIALIZE REFLACTIVE PLUGINS
 server.register(require('inert'), (err) => {
     if (err) {
       console.error(err);
