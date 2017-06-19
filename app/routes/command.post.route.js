@@ -5,7 +5,14 @@ module.exports = {
   method: ['GET', 'POST'],
   path: '/api/cmd/{action*}',
   config: {
-    // auth: { mode: 'try' },
+    auth: {
+      mode: 'try'
+    },
+    validate: {
+      params: {
+        action: Joi.string().regex(/([\w\-_]+\/?){0,3}/).required()
+      }
+    }
   },
   description: 'calls plugin command directly',
   handler: function (request, reply) {
