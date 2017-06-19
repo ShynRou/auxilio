@@ -1,7 +1,7 @@
 
 var loki = {
   register: function (server, options, next) {
-    var lokijs = new require('lokijs').loki;
+    var lokijs = new require('lokijs');
     const db = new lokijs('./storage/db.json');
     server.expose('db',db);
 

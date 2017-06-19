@@ -2,27 +2,32 @@ const Boom = require('boom');
 const Joi = require('joi');
 
 module.exports = {
-  method: ['POST'],
+  method: ['GET', 'POST'],
   path: '/api/cmd/{action*}',
   config: {
     // auth: { mode: 'try' },
-    validate: {
-      params: {
-        action: Joi.array().min(1).max(3)
-      }
-    }
   },
   description: 'calls plugin command directly',
   handler: function (request, reply) {
 
+    let action = request.params.action.split('/');
 
-    let success = request.server.plugins.officer.call(
+    let promise = request.server.plugins.officer.run(
       request,
-      request.params.action[0] + request.params.action[1] ? '.' + request.params.action[1] : '',
-      request.params.action[2]
+      reply,
+      action[0] + (action[1] ? '.' + action[1] : ''),
+      action[2]
     );
 
-    if (!success)
+    if (promise) {
+      promise.then(
+        data => reply(data)
+      ).catch(
+        data => reply(data)
+      );
+    }
+    else {
       return reply(Boom.notFound());
+    }
   }
 };

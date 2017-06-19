@@ -1,5 +1,10 @@
+const UUID = require('uuid');
+
+
 const officer = {};
 officer.commands = {};
+
+let server = null;
 
 const WORD_TYPE = {
   optional: 0,
@@ -11,10 +16,22 @@ const WORD_TYPE = {
 officer.register = function (plugin) {
   console.log(`${plugin.id}${plugin.description ? ' \t\t//' + plugin.description : ''}`);
 
+  if (officer.commands[plugin.id]) {
+    console.error(`Duplicated id, maybe you have already registered this plugin? (${plugin.id})`);
+    return;
+  }
+
   officer.commands[plugin.id] = plugin;
+  plugin.collection = server.plugins.loki.db.getCollection('plugin.' + plugin.id);
+  if (!plugin.collection) {
+    plugin.collection = server.plugins.loki.db.addCollection('plugin.' + plugin.id, {
+      unique: ['uid'],
+    });
+  }
 
   if (plugin.commands && plugin.commands.length > 0) {
     plugin.commands.forEach(command => {
+      command.plugin = plugin;
       officer.commands[`${plugin.id}.${command.id}`] = command;
       console.log(` |.${command.id}${plugin.description ? ' \t\t//' + plugin.description : ''}`);
     });
@@ -22,24 +39,46 @@ officer.register = function (plugin) {
 };
 
 
-officer.call = function (request, reply, cmd, entryPoint = 'entry', param = {}) {
+officer.run = function (request, reply, cmd, entryPoint = 'entry', param = {}) {
+  console.log(cmd);
   if (officer.commands[cmd]) {
     let command = officer.commands[cmd];
     if (command.handler) {
       return new Promise(
         (resolve, reject) =>
-          command.handler(reply, request.session, param)
+          command.handler(
+            resolve,
+            reject,
+            officer.getSession(command, request.credentials && request.credentials.username),
+            param
+          )
       );
     }
     else if (command.handlers && command.handlers[entryPoint]) {
       return new Promise(
         (resolve, reject) =>
-        command.handlers[entryPoint](resolve, reject, request.session, param)
+          command.handlers[entryPoint](
+            resolve,
+            reject,
+            officer.getSession(command, request.credentials && request.credentials.username),
+            param
+          )
       );
     }
   }
   return null;
 };
+
+officer.getSession = function (cmd, user = '*') {
+  const collection = cmd && cmd.plugin.collection;
+  return {
+    get: () => collection.find({ user }),
+    save: (data) => collection.update(data),
+    remove: (uid) => collection.removeWhere({ uid }),
+    create: () => collection.insert({ uid: UUID.v4(), user })
+  }
+};
+
 
 officer.callScript = function (request, reply, script) {
 
@@ -64,7 +103,7 @@ officer.callScript = function (request, reply, script) {
 
       param[''] = match[5];
 
-      return officer.call(request, reply, command, entry, param);
+      return officer.run(request, reply, command, entry, param);
     }
   }
 
@@ -72,12 +111,11 @@ officer.callScript = function (request, reply, script) {
 };
 
 
-
-
 // REGISTER PLUGIN =====================================================
 
 var plugin = {
-  register: function (server, options, next) {
+  register: function (srv, options, next) {
+    server = srv;
     for (let key in officer) {
       server.expose(key, officer[key]);
     }
