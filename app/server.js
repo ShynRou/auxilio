@@ -1,10 +1,9 @@
 const Rinku = function (config) {
-
-
+  
   const Hapi = require('hapi');
 
   this.server = new Hapi.Server();
-  this.server.connection({port: 8080, host: 'localhost'});
+  this.server.connection(config.server);
 
   this.server.start((err) => {
     if (err) {
