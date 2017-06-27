@@ -1,8 +1,8 @@
 {
-  "name": "auxilio",
+  "name": "rinku",
   "version": "0.0.1",
   "description": "personal assistant api",
-  "main": "api/server.js",
+  "main": "app/server.js",
   "scripts": {
     "start": "node app/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
