@@ -9,7 +9,7 @@ module.exports = {
     validate: {
       payload: {
         username: Joi.string().min(3).max(64).required(),
-        password: Joi.string().min(6).max(64).required()
+        password: Joi.string().min(6).max(1024).required()
       }
     }
   },
