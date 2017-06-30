@@ -1,37 +1,47 @@
-const Hapi = require('hapi');
+const Rinku = function (config) {
+  
+  const Hapi = require('hapi');
 
-const server = new Hapi.Server();
-server.connection({ port: 8080, host: 'localhost' });
+  this.server = new Hapi.Server();
+  this.server.connection(config.server);
 
-server.start((err) => {
-  if (err) {
-    throw err;
-  }
-
-  console.log(`Server running at: ${server.info.uri}`);
-});
-
-// REGISTER:
-//  - Database (lokijs)
-server.register(require('./plugins/loki/loki'));
-//  - Command Manager (officer)
-server.register(require('./plugins/officer/officer'));
-//  - Language Parser (langParser)
-server.register({
-  register: require('./plugins/langParser/langParser'),
-  options: {
-    dictionary: './app/resource/dict/en/dictionary_custom.json'
-  }
-});
-
-// INITIALIZE REFLACTIVE PLUGINS
-server.register(require('inert'), (err) => {
+  this.server.start((err) => {
     if (err) {
-      console.error(err);
-      return;
+      throw err;
     }
 
-    require('./commands')(server);
-    require('./routes')(server);
-  }
-);
+    console.log(`Server running at: ${this.server.info.uri}`);
+  });
+
+
+// INITIALIZE PLUGINS
+  this.server.register([
+      require('hapi-auth-cookie'),
+      require('./plugins/loki/loki'),
+      require('./plugins/officer/officer'),
+      {
+        register: require('./plugins/langParser/langParser'),
+        options: {
+          dictionary: './app/resource/dict/en/dictionary_custom.json'
+        }
+      },
+      require('inert'),
+    ], (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      this.officer = this.server.plugins.officer;
+      this.langParser = this.server.plugins.langParser;
+      this.loki = this.server.plugins.loki;
+
+      require('./auth')(server);
+      require('./commands')(server);
+      require('./routes')(server);
+
+    }
+  );
+};
+
+module.exports = Rinku;

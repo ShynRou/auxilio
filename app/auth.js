@@ -1,26 +1,31 @@
-const cache = server.cache(
-  { segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000 }
-);
-server.app.cache = cache;
+module.exports = function (server) {
 
-server.auth.strategy('session', 'cookie', true, {
-  password: '>kshdl:_As,d_:?=§$.,uadI((/§ujSdadja#sl",das34ohsjd,mN;S:;DAp=)"3434>',
-  cookie: 'SID',
-  redirectTo: '/api/auth/login',
-  isSecure: false,
-  validateFunc: function (request, session, callback) {
+  const cache = server.cache(
+    {segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000}
+  );
+  server.app.cache = cache;
 
-    cache.get(session.sid, (err, cached) => {
+  server.auth.strategy('session', 'cookie', 'try', {
+    password: '>kshdl:_As,d_:?=§$.,uadI((/§ujSda>dja#sl",das34ohsjd,mN;S:;DAp=)"3434>',
+    cookie: 'SID',
+    isSecure: false,
+    validateFunc: function (request, session, callback) {
+      try {
+        let sessionObj = request.server.app.db.sessions.find(session.sid);
 
-      if (err) {
+        if (sessionObj) {
+          return callback(null, true, sessionObj);
+        }
+        else {
+          return callback(null, false);
+        }
+      }
+      catch (e) {
         return callback(err, false);
       }
 
-      if (!cached) {
-        return callback(null, false);
-      }
+    }
+  });
 
-      return callback(null, true, cached.account);
-    });
-  }
-});
+  console.log('AUTH INITILIZED')
+};
