@@ -1,20 +1,25 @@
+const Joi = require('joi');
+const Boom = require('boom');
+
 module.exports = {
   method: ['POST'],
-  path: '/api/',
+  path: '/api',
   config: {
     //auth: { mode: 'try' },
+    validate: {
+      payload: Joi.string()
+    }
   },
   description: 'basic text based action call',
   handler: function (request, reply) {
-    console.log(request.server.plugins.langParser);
-    const result = {
-      request: request.payload,
-      parsed: request.server.plugins.langParser.fracture(request.payload),
-    };
 
-    result.answer = request.server.plugins.commander.parse(request, result.request, result.parsed);
+    let promise = request.server.plugins.officer.callScript(request, reply, request.payload );
 
-
-    return reply(result);
+    if(promise) {
+      promise.then((result) => reply(result)).catch((error) => reply(result));
+    }
+    else {
+      return reply(Boom.badRequest('Command not found!'));
+    }
   }
 };

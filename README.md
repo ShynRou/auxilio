@@ -1,18 +1,8 @@
-# auxilio
-multi-channel personal assistant
+# rinku.js
+[![Greenkeeper badge](https://badges.greenkeeper.io/ShynRou/rinku.svg)](https://greenkeeper.io/)
+[![Travis CI badge](https://travis-ci.org/ShynRou/rinku.svg?branch=develop)](https://travis-ci.org/)
 
-planned interface support:
-- rest-api
-- web-application (Angular2)
-- web-chat
-
-planned routes:
-- [ ] **/** text based action call
-- [ ] **/api/list/:plugin?** list all plugins / actions of :plugin
-- [ ] **/api/do/:plugin/:action/:state** manual action calls
-- [ ] **/chat/** chatbot page
-- [ ] **/manager/** angular page based manager
-
+is a pluginbased backend system based on hapijs and lokijs. 
 
 ---------
-Published under GNU GPLv3 License
+Published under GNU AGPLv3 License

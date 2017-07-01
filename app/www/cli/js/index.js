@@ -18,6 +18,7 @@ const toSnarkdown = function ( obj, indent = '' ) {
   switch (typeof obj) {
     case 'string':
     case 'number':
+    case 'boolean':
       result += indent+obj;
       break;
     case 'object':
@@ -41,7 +42,7 @@ const toSnarkdown = function ( obj, indent = '' ) {
 const sendMessage = function (message) {
   return new Promise((resolve,reject) => {
     var request = new XMLHttpRequest();
-    request.open("POST","/api/");
+    request.open("POST","/api");
     request.addEventListener('load', function(event) {
       if (request.status >= 200 && request.status < 300) {
         resolve(JSON.parse(request.responseText));
