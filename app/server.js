@@ -1,9 +1,12 @@
 const Rinku = function (config) {
-  
+
+  config = require('./configcheck')(config);
+
   const Hapi = require('hapi');
 
   this.server = new Hapi.Server();
   this.server.connection(config.server);
+  this.server.config = config;
 
   this.server.start((err) => {
     if (err) {
@@ -19,12 +22,13 @@ const Rinku = function (config) {
       require('hapi-auth-cookie'),
       require('./plugins/loki/loki'),
       require('./plugins/officer/officer'),
-      {
-        register: require('./plugins/langParser/langParser'),
-        options: {
-          dictionary: './app/resource/dict/en/dictionary_custom.json'
-        }
-      },
+      // language parsing isn't supported yet
+      // {
+      //   register: require('./plugins/langParser/langParser'),
+      //   options: {
+      //     dictionary: './app/resource/dict/en/dictionary_custom.json'
+      //   }
+      // },
       require('inert'),
     ], (err) => {
       if (err) {
@@ -33,7 +37,7 @@ const Rinku = function (config) {
       }
 
       this.officer = this.server.plugins.officer;
-      this.langParser = this.server.plugins.langParser;
+      //this.langParser = this.server.plugins.langParser;
       this.loki = this.server.plugins.loki;
 
       require('./auth')(server);
