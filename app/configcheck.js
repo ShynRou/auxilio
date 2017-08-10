@@ -18,9 +18,10 @@ const schema = Joi.object().keys({
       password: Joi.object({
         minLength: Joi.number().default(8),
         maxLength: Joi.number().default(128),
-        pattern: Joi.string().optional(),
+        pattern: Joi.string().email().optional(),
       }).default(),
     }).default(),
+    salt: Joi.number().min(1).default(9),
   }).default(),
 });
 

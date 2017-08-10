@@ -82,6 +82,16 @@ Auth.prototype.validatePassword = function (password) {
   return result;
 };
 
+Auth.prototype.validateEmail = function (email) {
+  if (!email) {
+    return email;
+  }
+
+  const result = Joi.string().email().validate(email) || {};
+  result.valid = !result.error;
+  return result;
+};
+
 
 Auth.prototype.isValidLogin = function (username, password) {
   // TODO: add user management
@@ -91,18 +101,44 @@ Auth.prototype.isValidLogin = function (username, password) {
 
 Auth.prototype.register = function (username, password, email) {
 
-  return Bcrypt.hash(myPlaintextPassword, saltRounds).then(function (hash) {
-      if (hash && this.users) {
-        let entry = this.users.find({ username });
-        if (entry) {
-          throw Boom.conflict('username already taken', { username: { taken: true } });
-        }
-
-        if
-
-          }
+  if(this.users) {
+    let entry = this.users.find({ username });
+    if (entry) {
+      throw Boom.conflict('username already taken', { username: { taken: true } });
     }
-  );
+
+    let validation = this.validateUsername(username);
+    if (!validation || !validation.valid) {
+      throw Boom.badData('username invalid', { username: validation });
+    }
+
+    validation = this.validatePassword(password);
+    if (!validation || !validation.valid) {
+      throw Boom.badData('password invalid', { password: validation });
+    }
+
+    validation = this.validateEmail(email);
+    if (!validation) {
+      throw Boom.badData('email invalid', { email: validation });
+    }
+
+    return Bcrypt.hash(password, this.server.config.auth.salt).then(function (hash) {
+        if (hash) {
+          entry = {
+            username: username,
+            password: hash,
+            email: email,
+          };
+
+          this.users.add(entry);
+          return true;
+        }
+      }
+    );
+  }
+  else {
+    throw Boom.internal('user collection not found');
+  }
 };
 
 
