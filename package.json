@@ -25,7 +25,7 @@
   "homepage": "https://github.com/ShynRou/auxilio#readme",
   "dependencies": {
     "bcrypt": "1.0.2",
-    "boom": "^6.0.0",
+    "boom": "^7.0.0",
     "glob": "^7.1.1",
     "good": "^7.2.0",
     "hapi": "^16.1.0",
