@@ -5,6 +5,13 @@ const Rinku = function (config) {
   this.server = new Hapi.Server();
   this.server.connection(config.server);
 
+  config.db = {
+    url: "mongodb://localhost:27017/rinku",
+    settings: {
+        native_parser: false,
+    }
+  };
+
   this.server.start((err) => {
     if (err) {
       throw err;
@@ -17,15 +24,13 @@ const Rinku = function (config) {
 // INITIALIZE PLUGINS
   this.server.register([
       require('hapi-auth-cookie'),
-      require('./plugins/loki/loki'),
       require('./plugins/officer/officer'),
-      {
-        register: require('./plugins/langParser/langParser'),
-        options: {
-          dictionary: './app/resource/dict/en/dictionary_custom.json'
-        }
-      },
+      require('./plugins/auth/auth.plugin'),
       require('inert'),
+      {
+        register: require('hapi-mongodb'),
+        options: config.db,
+      }
     ], (err) => {
       if (err) {
         console.error(err);
@@ -33,13 +38,9 @@ const Rinku = function (config) {
       }
 
       this.officer = this.server.plugins.officer;
-      this.langParser = this.server.plugins.langParser;
-      this.loki = this.server.plugins.loki;
 
-      require('./auth')(server);
-      require('./commands')(server);
+      require('./modules')(server);
       require('./routes')(server);
-
     }
   );
 };

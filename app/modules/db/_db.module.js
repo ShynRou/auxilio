@@ -1,12 +1,12 @@
 module.exports = {
   id: 'db',
   commands: [
-    require('./get.cmd'),
-    require('./set.cmd')
+    require('./get.cmd.js'),
+    require('./set.cmd.js')
   ],
-  handler: (resolve, reject, session, param) => {
+  handler: (input, request) => {
     const text = "I provide basic information and functionality, like the time and date.";
-    return resolve({
+    return request.reply({
       data: text,
       text: text,
       speech: text
