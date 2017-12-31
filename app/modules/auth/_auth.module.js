@@ -6,9 +6,9 @@ module.exports = {
     require('./logout.cmd.js'),
     require('./register.cmd.js'),
   ],
-  handler: (reply, inject, session, param) => {
+  handler: (input, request, originalRequest) => {
     const text = "You can use auth to login and logout.";
-    return reply({
+    return request.reply({
       data: text,
       text: text,
       speech: text

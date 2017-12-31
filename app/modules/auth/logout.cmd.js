@@ -2,8 +2,12 @@
 
 const command = {
   id: 'logout',
-  handler: async(input, request, originalRequest) => {
-    return originalRequest.server.plugins.auth.logout(originalRequest);
+  handler: async(input, request) => {
+    return request.reply(
+      await request.originalRequest.server.plugins.auth.logout(
+        request.originalRequest
+      )
+    );
   }
 
 };

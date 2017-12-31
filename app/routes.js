@@ -11,7 +11,7 @@ const table = (config, content, isHeadline) => {
 module.exports = function load(server) {
   var glob = require('glob'),
     path = require('path'),
-    tableConf = [12, 32, 4, 64];
+    tableConf = [10, 26, 1, 32];
 
   console.log("___ INITIALIZING ROUTES ______________________________________________________");
   console.log(table(tableConf, ['methods', 'route', 'auth', 'description'], true));

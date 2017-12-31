@@ -24,13 +24,13 @@
   },
   "homepage": "https://github.com/ShynRou/auxilio#readme",
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "boom": "^5.1.0",
     "glob": "^7.1.1",
     "good": "^7.2.0",
     "hapi": "^16.1.0",
     "hapi-auth-cookie": "^7.0.0",
     "hapi-auth-jwt2": "^7.3.0",
-    
     "hapi-mongodb": "^6.0.0",
     "inert": "^4.2.0",
     "joi": "^10.5.2",
@@ -38,8 +38,7 @@
     "node-localstorage": "^1.3.0",
     "nodemon": "^1.11.0",
     "number-to-words": "^1.2.3",
-    
-    "uuid": "^3.1.0",
-    "sheru": "git+https://github.com/ShynRou/sheru.git"
+    "sheru": "git+https://github.com/ShynRou/sheru.git",
+    "uuid": "^3.1.0"
   }
 }

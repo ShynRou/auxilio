@@ -2,7 +2,7 @@ const UUID = require('uuid');
 const Docs = require('../../helpers/Docs');
 
 
-const officer = {modules: {}, docs: {}};
+const officer = {modules: {}, docs: {}, rights: {}};
 const Sheru = require('sheru');
 officer.sheru = new Sheru({});
 
@@ -19,6 +19,7 @@ officer.register = function (module) {
 
   officer.modules[module.id] = module;
   officer.docs[module.id] = new Docs(server.plugins['hapi-mongodb'].db.collection('_module.' + module.id));
+  officer.rights[module.id] = {core: module.core};
 
   const enrich = (cmd, script) => {
     cmd.module = module;
@@ -52,10 +53,17 @@ officer.run = function (request, script, input = null) {
       return true;
     };
 
+    let originalRequest = undefined;
+    console.log(module, officer.rights[module]);
+    if(officer.rights[module] && officer.rights[module].core) {
+      originalRequest = request;
+    }
+
     return scriptFunc(input, {
       reply,
       docs: officer.docs[module],
       user: (request.credentials && request.credentials.username) || 'guest',
+      originalRequest: originalRequest,
     }).then(() => result).catch(error => {
       console.error(error);
       return error;

@@ -1,9 +1,12 @@
 
 var authRegister = {
   register: function (server, options, next) {
-    const Auth = require('./plugins/auth/auth');
+    const Auth = require('./auth');
+    const authentication = new Auth(server);
 
-    server.expose('auth', new Auth(this.server));
+    for (let key in authentication) {
+      server.expose(key, authentication[key]);
+    }
 
     next();
   }
