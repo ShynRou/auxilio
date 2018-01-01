@@ -5,7 +5,7 @@ module.exports = {
     // auth: { mode: 'try' },
   },
   description: 'replies API manual',
-  handler: function (request, reply) {
-    reply("hallo welt");
+  handler: function (request, h) {
+    return "TODO: WRITE AUTOMATED API DOCUMENT"; //TODO: WRITE AUTOMATED API DOCUMENT
   }
 };

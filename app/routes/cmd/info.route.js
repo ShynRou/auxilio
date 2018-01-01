@@ -15,7 +15,7 @@ module.exports = {
     }
   },
   description: 'get info for command',
-  handler: function (request, reply) {
+  handler: function (request, h) {
 
     let action = request.params.action.split(/\//g);
 
@@ -25,10 +25,10 @@ module.exports = {
     );
 
     if (command) {
-      return reply(command.description);
+      return command.description;
     }
     else {
-      return reply(Boom.notFound());
+      return Boom.notFound();
     }
   }
 };

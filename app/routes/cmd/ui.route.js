@@ -15,7 +15,7 @@ module.exports = {
     }
   },
   description: 'get ui for command',
-  handler: function (request, reply) {
+  handler: function (request, h) {
 
     let action = request.params.action.split(/\//g).filter(a => !!a);
 
@@ -25,12 +25,10 @@ module.exports = {
     );
 
     if (command) {
-      return reply(
-        command.ui || {}
-      );
+      return command.ui || {};
     }
     else {
-      return reply(Boom.notFound());
+      return Boom.notFound();
     }
   }
 }

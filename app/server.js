@@ -3,18 +3,16 @@ const Rinku = function (config) {
   config = require('./configcheck')(config);
 
   config.db = config.db || {
-      url: "mongodb://localhost:27017/rinku",
-      settings: {
-        native_parser: false,
-      }
-    };
+    url: "mongodb://localhost:27017/rinku",
+    settings: {
+      native_parser: false,
+    }
+  };
 
   const Hapi = require('hapi');
 
-  this.server = new Hapi.Server();
+  this.server = new Hapi.Server(config.server);
   this.server.app.config = config;
-  this.server.connection(config.server);
-  this.server.config = config;
 
   this.server.start((err) => {
     if (err) {
@@ -26,28 +24,25 @@ const Rinku = function (config) {
 
 // INITIALIZE PLUGINS
   this.server.register([
-      require('inert'),
-      require('hapi-auth-jwt2'),
-      require('./plugins/officer/officer'),
-      {
-        register: require('hapi-mongodb'),
-        options: config.db,
-      },
-      require('./plugins/auth/auth.plugin'),
-    ], (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+    require('inert'),
+    require('hapi-auth-jwt2'),
+    require('./plugins/officer/officer'),
+    {
+      plugin: require('hapi-mongodb'),
+      options: config.db,
+    },
+    require('./plugins/auth/auth.plugin'),
+  ]).then(() => {
+    this.officer = this.server.plugins.officer;
+    this.langParser = this.server.plugins.langParser;
+    this.loki = this.server.plugins.loki;
 
-      this.officer = this.server.plugins.officer;
-      this.langParser = this.server.plugins.langParser;
-      this.loki = this.server.plugins.loki;
-
-      require('./modules')(server);
-      require('./routes')(server);
-    }
-  );
+    require('./modules')(server);
+    require('./routes')(server);
+  }).catch((err) => {
+    console.error(err.stack);
+    this.server.stop();
+  });
 };
 
 module.exports = Rinku;

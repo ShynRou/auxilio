@@ -14,16 +14,17 @@ const Auth = function (server) {
   );
   server.app.cache = cache;
 
-  server.auth.strategy('jwt', 'jwt', 'try', {
+  server.auth.strategy('jwt', 'jwt', {
     key: server.app.config.auth.cookie.secret,
     cookieKey: server.app.config.auth.cookie.name,
     verifyOptions: {
       ignoreExpiration: false,
       algorithms: ['HS256']
     },
-    validateFunc: this.validateCookie
+    validate: this.validateCookie
   });
 
+  server.auth.default({strategy: 'jwt', mode: 'try'});
 
   this.users = server.plugins['hapi-mongodb'].db.collection(DB_AUTH_USERS);
 

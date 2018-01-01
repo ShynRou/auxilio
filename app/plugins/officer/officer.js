@@ -50,11 +50,10 @@ officer.run = function (request, script, input = null) {
 
     const reply = (data) => {
       result.push(data);
-      return true;
+      return data;
     };
 
     let originalRequest = undefined;
-    console.log(module, officer.rights[module]);
     if(officer.rights[module] && officer.rights[module].core) {
       originalRequest = request;
     }
@@ -93,18 +92,14 @@ officer.getCommand = function (request, commands) {
 // REGISTER PLUGIN =====================================================
 
 var plugin = {
-  register: function (srv, options, next) {
+  name: 'officer',
+  version: '1.0.0',
+  register: function (srv, options) {
     server = srv;
     for (let key in officer) {
       server.expose(key, officer[key]);
     }
-    next();
   }
 };
 
-plugin.register.attributes = {
-  name: 'officer',
-  version: '1.0.0'
-};
-
-module.exports = plugin;
+module.exports.plugin = plugin;

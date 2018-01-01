@@ -10,15 +10,13 @@ module.exports = {
     }
   },
   description: 'get info for command',
-  handler: function (request, reply) {
-    let modules = Object.keys(request.server.plugins.officer.modules)
+  handler: function (request, h) {
+    return Object.keys(request.server.plugins.officer.modules)
       .map(key => request.server.plugins.officer.modules[key])
       .map(module => ({
         id: module.id,
         name: module.name,
         icon: module.icon
       }));
-
-    return reply(modules);
   }
 };

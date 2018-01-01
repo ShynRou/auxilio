@@ -15,7 +15,7 @@ module.exports = {
     }
   },
   description: 'calls plugin command directly',
-  handler: function (request, reply) {
+  handler: async function (request, h) {
 
     let action = request.params.action.replace(/\//g,' ');
 
@@ -25,15 +25,11 @@ module.exports = {
       request.query || request.payload
     );
 
-    if (promise) {
-      promise.then(
-        data => reply(data)
-      ).catch(
-        data => reply(data)
-      );
+    if(promise) {
+      return (await promise)[0];
     }
     else {
-      return reply(Boom.notFound());
+      return Boom.notFound();
     }
   }
 };
