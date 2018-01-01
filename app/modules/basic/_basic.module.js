@@ -1,12 +1,12 @@
 module.exports = {
   id: 'basic',
   commands: [
-    require('./time.cmd'),
-    require('./date.cmd')
+    require('./time.cmd.js'),
+    require('./date.cmd.js')
   ],
-  handler: (resolve, reject, session, param) => {
+  handler: (input, request) => {
     const text = "I provide basic information and functionality, like the time and date.";
-    return resolve({
+    return request.reply({
       data: text,
       text: text,
       speech: text

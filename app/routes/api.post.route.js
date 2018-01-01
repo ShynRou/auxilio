@@ -11,15 +11,10 @@ module.exports = {
     }
   },
   description: 'basic text based action call',
-  handler: function (request, reply) {
+  handler: async function (request, h) {
 
-    let promise = request.server.plugins.officer.callScript(request, reply, request.payload );
+    let promise = request.server.plugins.officer.run(request, request.payload);
 
-    if(promise) {
-      promise.then((result) => reply(result)).catch((error) => reply(result));
-    }
-    else {
-      return reply(Boom.badRequest('Command not found!'));
-    }
+    return promise || Boom.badRequest('Command not found!');
   }
 };
