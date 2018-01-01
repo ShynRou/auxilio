@@ -5,9 +5,8 @@ const schema = Joi.object().keys({
   server: Joi.object().default(),
   auth: Joi.object().keys({
     cookie: Joi.object({
-      password: Joi.string().min(8).default('>kshdl:_As,d_:?=§$.,uadI((/§ujSda>dja#sl",das34ohsjd,mN;S:;DAp=)"3434>'),
+      secret: Joi.string().min(8).default('>kshdl:_As,d_:?=§$.,uadI((/§ujSda>dja#sl",das34ohsjd,mN;S:;DAp=)"3434>'),
       name: Joi.string().default('SID'),
-      isSecure: Joi.boolean().default(true),
     }).default(),
     rules: Joi.object({
       username: Joi.object({

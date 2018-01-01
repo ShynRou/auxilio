@@ -3,27 +3,26 @@ const Joi = require('joi');
 
 module.exports = {
   method: ['GET', 'POST'],
-  path: '/api/cmd/{action*}',
+  path: '/api/cmd/exec/{action*}',
   config: {
     auth: {
       mode: 'try'
     },
     validate: {
       params: {
-        action: Joi.string().regex(/([\w\-_]+\/?){0,3}/).required()
+        action: Joi.string().regex(/([\w\-_]+\/?)*/).required()
       }
     }
   },
   description: 'calls plugin command directly',
   handler: function (request, reply) {
 
-    let action = request.params.action.split('/');
+    let action = request.params.action.replace(/\//g,' ');
 
     let promise = request.server.plugins.officer.run(
       request,
-      reply,
-      action[0] + (action[1] ? '.' + action[1] : ''),
-      action[2]
+      action,
+      request.query || request.payload
     );
 
     if (promise) {

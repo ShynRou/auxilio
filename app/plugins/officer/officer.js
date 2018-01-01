@@ -1,115 +1,94 @@
 const UUID = require('uuid');
+const Docs = require('../../helpers/Docs');
 
 
-const officer = {};
-officer.commands = {};
+const officer = {modules: {}, docs: {}, rights: {}};
+const Sheru = require('sheru');
+officer.sheru = new Sheru({});
 
 let server = null;
 
-const WORD_TYPE = {
-  optional: 0,
-  addition: 1,
-  required: 2,
-};
 
+officer.register = function (module) {
+  console.log(`${module.id}${module.description ? ' \t\t//' + module.description : ''}`);
 
-officer.register = function (plugin) {
-  console.log(`${plugin.id}${plugin.description ? ' \t\t//' + plugin.description : ''}`);
-
-  if (officer.commands[plugin.id]) {
-    console.error(`Duplicated id, maybe you have already registered this plugin? (${plugin.id})`);
+  if (officer.modules[module.id]) {
+    console.error(`Duplicated id, maybe you have already registered this plugin? (${module.id})`);
     return;
   }
 
-  officer.commands[plugin.id] = plugin;
-  plugin.collection = server.plugins.loki.db.getCollection('plugin.' + plugin.id);
-  if (!plugin.collection) {
-    plugin.collection = server.plugins.loki.db.addCollection('plugin.' + plugin.id, {
-      unique: ['uid'],
+  officer.modules[module.id] = module;
+  officer.docs[module.id] = new Docs(server.plugins['hapi-mongodb'].db.collection('_module.' + module.id));
+  officer.rights[module.id] = {core: module.core};
+
+  const enrich = (cmd, script) => {
+    cmd.module = module;
+    script = (script ? script + '/' : '') + cmd.id;
+
+    if (cmd.commands && cmd.commands.length > 0) {
+      cmd.commands = cmd.commands.reduce((obj, command) => {
+        obj[command.id] = enrich(command, script);
+        return obj;
+      }, {});
+    }
+    return cmd;
+  };
+
+  enrich(module);
+
+  officer.sheru.addCommand(module.id, module);
+};
+
+
+officer.run = function (request, script, input = null) {
+  var scriptFunc = officer.sheru.parse(script);
+  if (scriptFunc) {
+
+    const module = script.replace(/\s.*$/gi, '').toLowerCase();
+
+    const result = [];
+
+    const reply = (data) => {
+      result.push(data);
+      return true;
+    };
+
+    let originalRequest = undefined;
+    console.log(module, officer.rights[module]);
+    if(officer.rights[module] && officer.rights[module].core) {
+      originalRequest = request;
+    }
+
+    return scriptFunc(input, {
+      reply,
+      docs: officer.docs[module],
+      user: (request.credentials && request.credentials.username) || 'guest',
+      originalRequest: originalRequest,
+    }).then(() => result).catch(error => {
+      console.error(error);
+      return error;
     });
   }
-
-  if (plugin.commands && plugin.commands.length > 0) {
-    plugin.commands.forEach(command => {
-      command.plugin = plugin;
-      officer.commands[`${plugin.id}.${command.id}`] = command;
-      console.log(` |.${command.id}${plugin.description ? ' \t\t//' + plugin.description : ''}`);
-    });
-  }
 };
 
+officer.getCommand = function (request, commands) {
 
-officer.run = function (request, reply, cmd, entryPoint = 'entry', param = {}) {
-  console.log(cmd);
-  if (officer.commands[cmd]) {
-    let command = officer.commands[cmd];
-    if (command.handler) {
-      return new Promise(
-        (resolve, reject) =>
-          command.handler(
-            resolve,
-            reject,
-            officer.getSession(command, request.credentials && request.credentials.username),
-            param
-          )
-      );
+  if (!commands || commands.length <= 0) {
+    return null;
+  }
+
+  let result = officer.modules[commands[0]];
+  for (let i = 1; i < commands.length; i++) {
+    if (result && result.commands) {
+      return null;
     }
-    else if (command.handlers && command.handlers[entryPoint]) {
-      return new Promise(
-        (resolve, reject) =>
-          command.handlers[entryPoint](
-            resolve,
-            reject,
-            officer.getSession(command, request.credentials && request.credentials.username),
-            param
-          )
-      );
+    const cmd = result.commands[commands[i]];
+    if (!cmd) {
+      return null;
     }
   }
-  return null;
+  return result;
 };
-
-officer.getSession = function (cmd, user = '*') {
-  const collection = cmd && cmd.plugin.collection;
-  return {
-    get: () => collection.find({ user }),
-    save: (data) => collection.update(data),
-    remove: (uid) => collection.removeWhere({ uid }),
-    create: () => collection.insert({ uid: UUID.v4(), user })
-  }
-};
-
-
-officer.callScript = function (request, reply, script) {
-
-  if (script) {
-    // MATCH COMMAND AND SEPERATE INTO 1:plugin, 2:command, 3:entry, 4: named params, 5: unnamed params
-    let match = script.match(/\/?([\w_-]+)(?:\.([\w_-]+))?(?:\.([\w_-]+))?( +\-[\w_-]+(?:\=(?:\"[^\"]*\"|[^\s]+)?))*(?: +(.*))?/);
-
-    if (match) {
-      let command = match[1] + (match[2] ? '.' + match[2] : '');
-      let entry = match[3] || 'entry';
-
-      let param = (match[4] && match[4].split(/(\-[\w_-]+(?:\=(?:\"[^\"]*\"|[^\s]+)))/).reduce(
-          (result, value) => {
-            let match = value.match(/\-([\w_-]+)(?:\=(\"[^\"]*\"|[^\s]+))/);
-            if (match) {
-              result[match[1]] = match[2] ? match[2].replace(/^\"|\"$/g, '') : true;
-            }
-            return result;
-          },
-          {}
-        )) || {};
-
-      param[''] = match[5];
-
-      return officer.run(request, reply, command, entry, param);
-    }
-  }
-
-  return false;
-};
-
 
 // REGISTER PLUGIN =====================================================
 

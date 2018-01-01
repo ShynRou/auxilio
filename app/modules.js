@@ -4,9 +4,9 @@ module.exports = function load(server) {
 
   console.log("______________________________________________________________________________");
   console.log("___ INITIALIZING OFFICER  ____________________________________________________");
-  glob.sync(__dirname + '/commands/**/*.cmd.plugin.js').forEach(function (file) {
-    let plugin = require(path.resolve(file));
-    server.plugins.officer.register(plugin);
+  glob.sync(__dirname + '/modules/**/*.module.js').forEach(function (file) {
+    let module = require(path.resolve(file));
+    server.plugins.officer.register(module);
   });
   console.log("______________________________________________________________________________");
 };
