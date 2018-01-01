@@ -14,6 +14,7 @@ const Rinku = function (config) {
   this.server = new Hapi.Server();
   this.server.app.config = config;
   this.server.connection(config.server);
+  this.server.config = config;
 
   this.server.start((err) => {
     if (err) {
@@ -40,6 +41,8 @@ const Rinku = function (config) {
       }
 
       this.officer = this.server.plugins.officer;
+      this.langParser = this.server.plugins.langParser;
+      this.loki = this.server.plugins.loki;
 
       require('./modules')(server);
       require('./routes')(server);
