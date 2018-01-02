@@ -1,0 +1,19 @@
+{
+  "id": "basic",
+  "author": "Dustin 'ShynRou' Hagemeier",
+  "rights": {
+    "core": false,
+    "https": false,
+    "scripts": false,
+    "docs": false
+  },
+  "handler": "basic.cmd.js",
+  "commands": {
+    "time": {
+      "handler": "time.cmd.js"
+    },
+    "date": {
+      "handler": "date.cmd.js"
+    }
+  }
+}
