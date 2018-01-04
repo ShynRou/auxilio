@@ -5,7 +5,8 @@ module.exports = async (input, request) => {
       input.username,
       input.password,
       input.email,
-      request.originalRequest
+      request.originalRequest,
+      request.responseToolkit
     )
   );
 };

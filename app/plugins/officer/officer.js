@@ -46,7 +46,7 @@ officer.register = function (module) {
 };
 
 
-officer.run = function (request, script, input = null) {
+officer.run = function (request, h, script, input = null) {
   var scriptFunc = officer.sheru.parse(script);
   if (scriptFunc) {
 
@@ -59,16 +59,12 @@ officer.run = function (request, script, input = null) {
       return data;
     };
 
-    let originalRequest = undefined;
-    if (officer.rights[module] && officer.rights[module].core) {
-      originalRequest = request;
-    }
-
     return scriptFunc(input, {
       reply,
       docs: officer.docs[module],
       user: (request.credentials && request.credentials.username) || 'guest',
-      originalRequest: originalRequest,
+      responseToolkit: h,
+      originalRequest: request,
     }).then(() => result).catch(error => {
       console.error('error', error);
       return error;

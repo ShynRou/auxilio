@@ -21,6 +21,7 @@ module.exports = {
 
     let promise = request.server.plugins.officer.run(
       request,
+      h,
       action,
       request.query || request.payload
     );

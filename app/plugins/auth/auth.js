@@ -10,7 +10,7 @@ const Auth = function (server) {
   this.server = server;
 
   const cache = server.cache(
-    {segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000}
+    { segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000 }
   );
   server.app.cache = cache;
 
@@ -24,7 +24,7 @@ const Auth = function (server) {
     validate: this.validateCookie
   });
 
-  server.auth.default({strategy: 'jwt', mode: 'try'});
+  server.auth.default({ strategy: 'jwt', mode: 'try' });
 
   this.users = server.plugins['hapi-mongodb'].db.collection(DB_AUTH_USERS);
 
@@ -36,7 +36,7 @@ Auth.prototype = {
   validateCookie: async function (request, session, callback) {
 
     try {
-      let userObj = await this.users.findOne({_id: session.username});
+      let userObj = await this.users.findOne({ _id: session.username });
 
       if (userObj && userObj.sessions && userObj.sessions.find((s) => s && s.sid === session.sid)) {
         return callback(null, true, userObj);
@@ -98,9 +98,9 @@ Auth.prototype = {
   },
 
 
-  login: async function (username, password, request) {
+  login: async function (username, password, request, responseToolkit) {
 
-    let entry = await this.users.findOne({_id: username});
+    let entry = await this.users.findOne({ _id: username });
     if (entry && await Bcrypt.compare(password, entry.password)) {
 
       const sid = UUID.v4();
@@ -112,34 +112,37 @@ Auth.prototype = {
       }
       this.users.save(entry);
 
-      return sid;
+      return responseToolkit
+        .response({ success: true, key: this.server.app.config.auth.cookie.name, value: sid })
+        .type('application/json')
+        .state(this.server.app.config.auth.cookie.name, sid);
     }
     else {
       throw Boom.unauthorized('username not found');
     }
   },
 
-  register: async function (username, password, email, request) {
+  register: async function (username, password, email, request, responseToolkit) {
     if (this.users) {
       let validation = this.validateUsername(username);
       if (!validation || !validation.valid) {
-        throw Boom.badData('username invalid', {username: validation});
+        throw Boom.badData('username invalid', { username: validation });
       }
 
-      let entry = await this.users.findOne({_id: username});
+      let entry = await this.users.findOne({ _id: username });
       console.log(username, entry);
       if (entry) {
-        throw Boom.conflict('username already taken', {username: {taken: true}});
+        throw Boom.conflict('username already taken', { username: { taken: true } });
       }
 
       validation = this.validatePassword(password);
       if (!validation || !validation.valid) {
-        throw Boom.badData('password invalid', {password: validation});
+        throw Boom.badData('password invalid', { password: validation });
       }
 
       validation = this.validateEmail(email);
       if (!validation) {
-        throw Boom.badData('email invalid', {email: validation});
+        throw Boom.badData('email invalid', { email: validation });
       }
 
       return Bcrypt.hash(password, this.server.app.config.auth.salt).then((hash) => {
@@ -156,8 +159,8 @@ Auth.prototype = {
           throw Boom.internal('could not generate hash');
         }
       ).then((success) => {
-        if(success) {
-          return this.login(username, password, request);
+        if (success) {
+          return this.login(username, password, request, responseToolkit);
         }
       });
     }
@@ -166,10 +169,20 @@ Auth.prototype = {
     }
   },
 
-  logout: async function (request) {
-    let user = await this.sessions.findOne({_id: request.credentials._id});
+  logout: async function (request, responseToolkit) {
+    let user = await this.users.findOne({ _id: request.credentials._id });
     let index = user.sessions && user.sessions.findIndex((s) => s && s.sid === request.credentials.session);
-    request.cookieAuth.clear();
+    if (index >= 0) {
+      user.sessions.splice(index);
+      this.users.save(user);
+      return responseToolkit
+        .response({ success: true })
+        .type('application/json')
+        .unstate(this.server.app.config.auth.cookie.name);
+    }
+    return responseToolkit
+      .response({ success: false })
+      .type('application/json');
   }
 };
 

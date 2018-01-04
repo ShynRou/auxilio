@@ -3,7 +3,8 @@ module.exports = async (input, request) => {
     await request.originalRequest.server.plugins.auth.login(
       input.username,
       input.password,
-      request.originalRequest
+      request.originalRequest,
+      request.responseToolkit,
     )
   );
 };

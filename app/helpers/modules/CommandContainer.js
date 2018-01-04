@@ -25,6 +25,7 @@ CommandContainer.prototype = {
     if(this.module.rights) {
       if (this.module.rights.core) {
         secureRequest.originalRequest = request.originalRequest;
+        secureRequest.responseToolkit = request.responseToolkit;
       }
 
       if (this.module.rights.docs) {
