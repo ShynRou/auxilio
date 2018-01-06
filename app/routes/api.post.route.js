@@ -15,6 +15,12 @@ module.exports = {
 
     let promise = request.server.plugins.officer.run(request, h, request.payload);
 
-    return promise || Boom.badRequest('Command not found!');
+    if (promise) {
+      const result = await promise;
+      console.log(result);
+      return result && result.length === 1 ? result[0] : result;
+    } else {
+      return Boom.badRequest('Command not found!');
+    }
   }
 };

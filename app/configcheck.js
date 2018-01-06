@@ -1,4 +1,5 @@
 
+const time2ms = require('./helpers/time2ms');
 const Joi = require('joi');
 
 const schema = Joi.object().keys({
@@ -6,7 +7,14 @@ const schema = Joi.object().keys({
   auth: Joi.object().keys({
     cookie: Joi.object({
       secret: Joi.string().min(8).default('>kshdl:_As,d_:?=§$.,uadI((/§ujSda>dja#sl",das34ohsjd,mN;S:;DAp=)"3434>'),
-      name: Joi.string().default('SID'),
+      name: Joi.string().default('R1NKU'),
+      ttl: Joi.number().min(0).default(time2ms('1month')),
+      domain: Joi.string().allow(null).optional(),
+      isSecure: Joi.boolean().default(false),
+      isHttpOnly: Joi.boolean().default(true),
+      clearInvalid: Joi.boolean().default(true),
+      strictHeader: Joi.boolean().default(true),
+      path: Joi.string().default('/'),
     }).default(),
     rules: Joi.object({
       username: Joi.object({

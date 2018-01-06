@@ -2,6 +2,7 @@ const Bcrypt = require('bcrypt');
 const Boom = require('boom');
 const UUID = require('uuid');
 const Joi = require('joi');
+const JWT = require('jsonwebtoken');
 
 const DB_AUTH_USERS = 'users';
 
@@ -28,18 +29,43 @@ const Auth = function (server) {
 
   this.users = server.plugins['hapi-mongodb'].db.collection(DB_AUTH_USERS);
 
+  // assemble cookie options
+
+  this.cookieOptions = {
+    ttl: server.app.config.auth.cookie.ttl, // expires a year from today
+    encoding: 'none',    // we already used JWT to encode
+    domain: server.app.config.auth.cookie.domain,
+    isSecure: server.app.config.auth.cookie.isSecure,
+    isHttpOnly: server.app.config.auth.cookie.isHttpOnly,    // prevent client alteration
+    clearInvalid: server.app.config.auth.cookie.clearInvalid, // remove invalid cookies
+    strictHeader: server.app.config.auth.cookie.strictHeader,   // don't allow violations of RFC 6265
+    path: server.app.config.auth.cookie.path
+  };
+
   console.log('AUTH INITIALIZED');
 };
 
 
 Auth.prototype = {
-  validateCookie: async function (request, session, callback) {
+  validateCookie: async function (decoded, request, callback) {
 
+    console.log(decoded);
     try {
-      let userObj = await this.users.findOne({ _id: session.username });
+      let userObj = await this.users.findOne({ _id: decoded.username });
 
-      if (userObj && userObj.sessions && userObj.sessions.find((s) => s && s.sid === session.sid)) {
-        return callback(null, true, userObj);
+      if (userObj && userObj.sessions) {
+        let currentTime = Date.now();
+        let aliveSessions = userObj.sessions.filter(s => s.ttl + s.t > currentTime);
+        if(aliveSessions.length !== userObj.sessions) {
+          userObj.sessions = aliveSessions;
+          this.users.save(userObj);
+        }
+        if (userObj.sessions.find((s) => s && s.sid === decoded.sid)) {
+          return callback(null, true, decoded);
+        }
+        else {
+          return callback(null, true, decoded);
+        }
       }
       else {
         return callback(null, false);
@@ -103,19 +129,23 @@ Auth.prototype = {
     let entry = await this.users.findOne({ _id: username });
     if (entry && await Bcrypt.compare(password, entry.password)) {
 
-      const sid = UUID.v4();
-      if (entry.sid && entry.sid.length !== undefined) {
-        entry.sid.push(sid);
+      const session = {sid: UUID.v4(), ttl: this.server.app.config.auth.cookie.ttl, t: Date.now()};
+      if (entry.sessions && entry.sessions.length !== undefined) {
+        entry.sessions.push(session);
       }
       else {
-        entry.sid = [sid];
+        entry.sid = [session];
       }
       this.users.save(entry);
 
+
+      let credentials = {...session, username};
+      let token = JWT.sign(credentials, this.server.app.config.auth.cookie.secret);
+
       return responseToolkit
-        .response({ success: true, key: this.server.app.config.auth.cookie.name, value: sid })
+        .response(JSON.stringify({ success: true, key: this.server.app.config.auth.cookie.name, value: token }))
         .type('application/json')
-        .state(this.server.app.config.auth.cookie.name, sid);
+        .state(this.server.app.config.auth.cookie.name, token, this.cookieOptions);
     }
     else {
       throw Boom.unauthorized('username not found');
