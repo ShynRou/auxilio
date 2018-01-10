@@ -1,0 +1,28 @@
+{
+  "id": "users",
+  "icon": "user.svg",
+  "author": "Dustin 'ShynRou' Hagemeier",
+  "rights": {
+    "core": true
+  },
+  "handler": "users.cmd.js",
+  "commands": {
+    "find": {
+      "handler": "find.cmd.js",
+      "options": [
+        {"short": "u", "long": "username", "params": 1},
+        {"short": "e", "long": "email", "params": 1}
+      ]
+    },
+    "find-one": {
+      "handler": "findOne.cmd.js",
+      "options": [
+        {"short": "u", "long": "username", "params": 1},
+        {"short": "e", "long": "email", "params": 1}
+      ]
+    },
+    "me": {
+      "handler": "me.cmd.js"
+    }
+  }
+}

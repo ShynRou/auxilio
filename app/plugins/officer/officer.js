@@ -1,4 +1,5 @@
 const UUID = require('uuid');
+const fs = require('fs');
 const CommandContainer = require('../../helpers/modules/CommandContainer');
 const Docs = require('../../helpers/modules/Docs');
 
@@ -20,6 +21,11 @@ officer.register = function (module) {
   officer.modules[module.id] = module;
   officer.docs[module.id] = new Docs(server.plugins['hapi-mongodb'].db.collection('_module.' + module.id));
   officer.rights[module.id] = { core: module.core };
+
+  if(module.icon && /\.svg$/i.test(module.icon)) {
+    const filename = module.icon.replace('/', '_');
+    module.icon = "data:image/svg+xml;base64," + new Buffer(fs.readFileSync(module.dir + filename, 'utf8')).toString('base64');
+  }
 
   const enrich = (cmd, cmdId, depth = 0) => {
     console.log(`${depth > 0 ? '  '.repeat(depth)+'↳' : ''}${cmdId} ${module.description ? ' \t\t//' + module.description : ''}`);
@@ -62,7 +68,7 @@ officer.run = function (request, h, script, input = null) {
     return scriptFunc(input, {
       reply,
       docs: officer.docs[module],
-      user: (request.credentials && request.credentials.username) || 'guest',
+      user: request.auth.credentials || {username: 'guest'},
       responseToolkit: h,
       originalRequest: request,
     }).then(() => result).catch(error => {

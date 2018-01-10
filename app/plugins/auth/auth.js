@@ -11,7 +11,7 @@ const Auth = function (server) {
   this.server = server;
 
   const cache = server.cache(
-    { segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000 }
+    {segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000}
   );
   server.app.cache = cache;
 
@@ -22,10 +22,10 @@ const Auth = function (server) {
       ignoreExpiration: false,
       algorithms: ['HS256']
     },
-    validate: this.validateCookie
+    validate: (decoded, request) => this.validateCookie(decoded, request)
   });
 
-  server.auth.default({ strategy: 'jwt', mode: 'try' });
+  server.auth.default({strategy: 'jwt', mode: 'try'});
 
   this.users = server.plugins['hapi-mongodb'].db.collection(DB_AUTH_USERS);
 
@@ -39,6 +39,7 @@ const Auth = function (server) {
     isHttpOnly: server.app.config.auth.cookie.isHttpOnly,    // prevent client alteration
     clearInvalid: server.app.config.auth.cookie.clearInvalid, // remove invalid cookies
     strictHeader: server.app.config.auth.cookie.strictHeader,   // don't allow violations of RFC 6265
+    isSameSite: false,
     path: server.app.config.auth.cookie.path
   };
 
@@ -47,32 +48,36 @@ const Auth = function (server) {
 
 
 Auth.prototype = {
-  validateCookie: async function (decoded, request, callback) {
+  validateCookie: async function (decoded, request) {
 
-    console.log(decoded);
     try {
-      let userObj = await this.users.findOne({ _id: decoded.username });
+      let userObj = await this.users.findOne({_id: decoded.username});
 
-      if (userObj && userObj.sessions) {
+      if (userObj) {
         let currentTime = Date.now();
-        let aliveSessions = userObj.sessions.filter(s => s.ttl + s.t > currentTime);
-        if(aliveSessions.length !== userObj.sessions) {
+        let aliveSessions = (userObj.sessions || []).filter(s => s.ttl + s.t > currentTime);
+        if (aliveSessions.length !== userObj.sessions) {
           userObj.sessions = aliveSessions;
           this.users.save(userObj);
         }
         if (userObj.sessions.find((s) => s && s.sid === decoded.sid)) {
-          return callback(null, true, decoded);
-        }
-        else {
-          return callback(null, true, decoded);
+          const result = {
+            isValid: true,
+            credentials: {
+              username: userObj._id,
+              email: userObj.email,
+              avatar: userObj.avatar,
+            }
+          };
+          console.log(result);
+          return result;
         }
       }
-      else {
-        return callback(null, false);
-      }
+      return {isValid: false};
     }
     catch (e) {
-      return callback(err, false);
+      console.error(e);
+      throw e;
     }
   },
 
@@ -126,7 +131,7 @@ Auth.prototype = {
 
   login: async function (username, password, request, responseToolkit) {
 
-    let entry = await this.users.findOne({ _id: username });
+    let entry = await this.users.findOne({_id: username});
     if (entry && await Bcrypt.compare(password, entry.password)) {
 
       const session = {sid: UUID.v4(), ttl: this.server.app.config.auth.cookie.ttl, t: Date.now()};
@@ -134,7 +139,7 @@ Auth.prototype = {
         entry.sessions.push(session);
       }
       else {
-        entry.sid = [session];
+        entry.sessions = [session];
       }
       this.users.save(entry);
 
@@ -143,7 +148,13 @@ Auth.prototype = {
       let token = JWT.sign(credentials, this.server.app.config.auth.cookie.secret);
 
       return responseToolkit
-        .response(JSON.stringify({ success: true, key: this.server.app.config.auth.cookie.name, value: token }))
+        .response(JSON.stringify({
+          success: true,
+          key: this.server.app.config.auth.cookie.name,
+          value: token,
+          ttl: this.server.app.config.auth.cookie.ttl,
+          t: Date.now()
+        }))
         .type('application/json')
         .state(this.server.app.config.auth.cookie.name, token, this.cookieOptions);
     }
@@ -156,23 +167,23 @@ Auth.prototype = {
     if (this.users) {
       let validation = this.validateUsername(username);
       if (!validation || !validation.valid) {
-        throw Boom.badData('username invalid', { username: validation });
+        throw Boom.badData('username invalid', {username: validation});
       }
 
-      let entry = await this.users.findOne({ _id: username });
+      let entry = await this.users.findOne({_id: username});
       console.log(username, entry);
       if (entry) {
-        throw Boom.conflict('username already taken', { username: { taken: true } });
+        throw Boom.conflict('username already taken', {username: {taken: true}});
       }
 
       validation = this.validatePassword(password);
       if (!validation || !validation.valid) {
-        throw Boom.badData('password invalid', { password: validation });
+        throw Boom.badData('password invalid', {password: validation});
       }
 
       validation = this.validateEmail(email);
       if (!validation) {
-        throw Boom.badData('email invalid', { email: validation });
+        throw Boom.badData('email invalid', {email: validation});
       }
 
       return Bcrypt.hash(password, this.server.app.config.auth.salt).then((hash) => {
@@ -200,18 +211,18 @@ Auth.prototype = {
   },
 
   logout: async function (request, responseToolkit) {
-    let user = await this.users.findOne({ _id: request.credentials._id });
+    let user = await this.users.findOne({_id: request.credentials._id});
     let index = user.sessions && user.sessions.findIndex((s) => s && s.sid === request.credentials.session);
     if (index >= 0) {
       user.sessions.splice(index);
       this.users.save(user);
       return responseToolkit
-        .response({ success: true })
+        .response({success: true})
         .type('application/json')
         .unstate(this.server.app.config.auth.cookie.name);
     }
     return responseToolkit
-      .response({ success: false })
+      .response({success: false})
       .type('application/json');
   }
 };

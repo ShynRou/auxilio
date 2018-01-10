@@ -17,13 +17,14 @@ module.exports = {
   description: 'calls plugin command directly',
   handler: async function (request, h) {
 
+    console.log(request.auth.credentials);
     let action = request.params.action.replace(/\//g,' ');
 
     let promise = request.server.plugins.officer.run(
       request,
       h,
       action,
-      request.query || request.payload
+      request.payload || request.query
     );
 
     if(promise) {
