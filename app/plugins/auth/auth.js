@@ -200,9 +200,7 @@ Auth.prototype = {
           throw Boom.internal('could not generate hash');
         }
       ).then((success) => {
-        if (success) {
-          return this.login(username, password, request, responseToolkit);
-        }
+        return {success};
       });
     }
     else {

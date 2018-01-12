@@ -13,6 +13,7 @@ module.exports = {
   handler: function (request, h) {
     return Object.keys(request.server.plugins.officer.modules)
       .map(key => request.server.plugins.officer.modules[key])
+      .filter(module => module && !module.hidden)
       .map(module => ({
         id: module.id,
         name: module.name,

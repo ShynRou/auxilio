@@ -25,7 +25,7 @@ module.exports = {
     );
 
     if (command) {
-      return command.ui || {};
+      return {ui: command.ui, store: command.store};
     }
     else {
       return Boom.notFound();
