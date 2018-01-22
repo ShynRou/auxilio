@@ -16,7 +16,6 @@ module.exports = function load(server) {
   if (server.app.config.modules && server.app.config.modules.dir) {
     glob.sync(`${server.app.config.modules.dir}/**/*.module.json`).forEach(function (file) {
       let module = require(path.resolve(file));
-      module.dir = file.replace('\\', '/').replace(/\/[^/]*$/, '/');
       if(modules[module.id]) {
         modules[module.id] = Object.assign({},modules[module.id], module);
       }
