@@ -25,7 +25,11 @@ module.exports = {
     );
 
     if (command) {
-      return command.description;
+      return Object.assign(
+        {},
+        command,
+        {commands: undefined, handler: undefined, container: undefined, module: undefined}
+      );
     }
     else {
       return Boom.notFound();
