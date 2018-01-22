@@ -1,8 +1,10 @@
 const UUID = require('uuid');
-const Docs = require('../../helpers/Docs');
+const fs = require('fs');
+const CommandContainer = require('../../helpers/modules/CommandContainer');
+const Docs = require('../../helpers/modules/Docs');
 
 
-const officer = {modules: {}, docs: {}, rights: {}};
+const officer = { modules: {}, docs: {}, rights: {} };
 const Sheru = require('sheru');
 officer.sheru = new Sheru({});
 
@@ -10,7 +12,6 @@ let server = null;
 
 
 officer.register = function (module) {
-  console.log(`${module.id}${module.description ? ' \t\t//' + module.description : ''}`);
 
   if (officer.modules[module.id]) {
     console.error(`Duplicated id, maybe you have already registered this plugin? (${module.id})`);
@@ -19,28 +20,34 @@ officer.register = function (module) {
 
   officer.modules[module.id] = module;
   officer.docs[module.id] = new Docs(server.plugins['hapi-mongodb'].db.collection('_module.' + module.id));
-  officer.rights[module.id] = {core: module.core};
+  officer.rights[module.id] = { core: module.core };
 
-  const enrich = (cmd, script) => {
+  const enrich = (cmd, cmdId, depth = 0) => {
+    console.log(`${depth > 0 ? '  '.repeat(depth)+'↳' : ''}${cmdId} ${module.description ? ' \t\t//' + module.description : ''}`);
+
     cmd.module = module;
-    script = (script ? script + '/' : '') + cmd.id;
 
-    if (cmd.commands && cmd.commands.length > 0) {
-      cmd.commands = cmd.commands.reduce((obj, command) => {
-        obj[command.id] = enrich(command, script);
-        return obj;
-      }, {});
+    cmd.container = new CommandContainer({...cmd});
+    cmd.handler = (input, request) => cmd.container.secureHandler(input, request);
+
+    if (cmd.commands) {
+      Object.keys(cmd.commands).forEach(
+        (commandId) => {
+          cmd.commands[commandId].id = commandId;
+          enrich(cmd.commands[commandId], commandId, depth+1);
+        }
+      );
     }
     return cmd;
   };
 
-  enrich(module);
+  enrich(module, module.id);
 
   officer.sheru.addCommand(module.id, module);
 };
 
 
-officer.run = function (request, script, input = null) {
+officer.run = function (request, h, script, input = null) {
   var scriptFunc = officer.sheru.parse(script);
   if (scriptFunc) {
 
@@ -53,25 +60,20 @@ officer.run = function (request, script, input = null) {
       return data;
     };
 
-    let originalRequest = undefined;
-    if(officer.rights[module] && officer.rights[module].core) {
-      originalRequest = request;
-    }
-
     return scriptFunc(input, {
       reply,
       docs: officer.docs[module],
-      user: (request.credentials && request.credentials.username) || 'guest',
-      originalRequest: originalRequest,
+      user: request.auth.credentials || {username: 'guest'},
+      responseToolkit: h,
+      originalRequest: request,
     }).then(() => result).catch(error => {
-      console.error(error);
+      console.error('error', error);
       return error;
     });
   }
 };
 
 officer.getCommand = function (request, commands) {
-
   if (!commands || commands.length <= 0) {
     return null;
   }

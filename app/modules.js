@@ -2,11 +2,27 @@ module.exports = function load(server) {
   var glob = require('glob'),
     path = require('path');
 
+  const modules = {};
+
   console.log("______________________________________________________________________________");
-  console.log("___ INITIALIZING OFFICER  ____________________________________________________");
-  glob.sync(__dirname + '/modules/**/*.module.js').forEach(function (file) {
+  console.log("___ MODULES  ____________________________________________________________");
+  glob.sync(__dirname + '/modules/**/*.module.json').forEach(function (file) {
     let module = require(path.resolve(file));
-    server.plugins.officer.register(module);
+    module.dir = file.replace('\\', '/').replace(/\/[^/]*$/, '/');
+
+    modules[module.id] = module;
   });
+
+  if (server.app.config.modules && server.app.config.modules.dir) {
+    glob.sync(`${server.app.config.modules.dir}/**/*.module.json`).forEach(function (file) {
+      let module = require(path.resolve(file));
+      module.dir = file.replace('\\', '/').replace(/\/[^/]*$/, '/');
+      if(modules[module.id]) {
+        modules[module.id] = Object.assign({},modules[module.id], module);
+      }
+    });
+  }
+
+  Object.keys(modules).forEach(key => server.plugins.officer.register(modules[key]));
   console.log("______________________________________________________________________________");
 };

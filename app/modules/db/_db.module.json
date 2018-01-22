@@ -1,0 +1,17 @@
+{
+  "id": "db",
+  "author": "Dustin 'ShynRou' Hagemeier",
+  "hidden": true,
+  "rights": {
+    "docs": true
+  },
+  "handler": "db.cmd.js",
+  "commands": {
+    "get": {
+      "handler": "get.cmd.js"
+    },
+    "set": {
+      "handler": "set.cmd.js"
+    }
+  }
+}

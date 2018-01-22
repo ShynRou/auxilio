@@ -1,7 +1,7 @@
 let Rinku = require('./app/server')({
   server: {
     host: 'localhost',
-    port: '3001',
+    port: 3001,
 
     routes: {
       cors: {
@@ -11,7 +11,8 @@ let Rinku = require('./app/server')({
           'Accept',
           'Access-Control-Allow-Origin',
           'Authorization',
-        ]
+        ],
+        credentials: true,
       }
     }
   },

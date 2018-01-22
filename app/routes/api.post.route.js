@@ -13,8 +13,14 @@ module.exports = {
   description: 'basic text based action call',
   handler: async function (request, h) {
 
-    let promise = request.server.plugins.officer.run(request, request.payload);
+    let promise = request.server.plugins.officer.run(request, h, request.payload);
 
-    return promise || Boom.badRequest('Command not found!');
+    if (promise) {
+      const result = await promise;
+      console.log(result);
+      return result && result.length === 1 ? result[0] : result;
+    } else {
+      return Boom.badRequest('Command not found!');
+    }
   }
 };
