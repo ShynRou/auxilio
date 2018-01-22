@@ -14,10 +14,8 @@ module.exports = {
     return Object.keys(request.server.plugins.officer.modules)
       .map(key => request.server.plugins.officer.modules[key])
       .filter(module => module && !module.hidden)
-      .map(module => ({
-        id: module.id,
-        name: module.name,
-        icon: module.icon
-      }));
+      .map(module => {
+        return {...module, commands: undefined, options: undefined, handler: undefined, container: undefined};
+      });
   }
 };

@@ -1,8 +1,6 @@
 {
   "id": "auth",
-  "icon": "key.svg",
   "author": "Dustin 'ShynRou' Hagemeier",
-  "hidden": true,
   "rights": {
     "core": true
   },

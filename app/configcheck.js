@@ -40,6 +40,9 @@ const schema = Joi.object({
     }).default(),
     salt: Joi.number().min(1).default(9),
   }).default(),
+  modules: Joi.object({
+    dir: Joi.string().optional(),
+  }).default()
 });
 
 

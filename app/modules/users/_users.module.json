@@ -1,6 +1,5 @@
 {
   "id": "users",
-  "icon": "user.svg",
   "author": "Dustin 'ShynRou' Hagemeier",
   "rights": {
     "core": true
@@ -70,57 +69,5 @@
     "state": {
       "users": []
     }
-  },
-  "ui": {
-    "type": "container",
-    "id": "module",
-    "children": [
-      {
-        "type": "container",
-        "id": "newUser",
-        "children": [
-          {
-            "type": "input",
-            "id": "username",
-            "title": "username",
-            "width": 3,
-            "inputType": "text",
-            "pattern": "[a-zA-Z0-9][a-zA-Z0-9_.-]+"
-          },
-          {
-            "type": "input",
-            "id": "email",
-            "title": "email",
-            "width": 3,
-            "inputType": "email",
-            "pattern": "[^@]+@[^@]+\\.[a-zA-Z]{2,6}"
-          },
-          {
-            "type": "input",
-            "id": "password",
-            "title": "password",
-            "width": 3,
-            "inputType": "password"
-          },
-          {
-            "type": "button",
-            "title": "add user",
-            "width": 3,
-            "onClick": "UI get module.newUser value | API -p add && (UI set module.newUser value {}; store get users)"
-          }
-        ]
-      },
-      {
-        "type": "table",
-        "title": "users",
-        "header": null,
-        "width": 12,
-        "height": 10,
-        "sync": {
-          "path": "users",
-          "attr": "value"
-        }
-      }
-    ]
   }
 }

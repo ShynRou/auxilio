@@ -22,11 +22,6 @@ officer.register = function (module) {
   officer.docs[module.id] = new Docs(server.plugins['hapi-mongodb'].db.collection('_module.' + module.id));
   officer.rights[module.id] = { core: module.core };
 
-  if(module.icon && /\.svg$/i.test(module.icon)) {
-    const filename = module.icon.replace('/', '_');
-    module.icon = "data:image/svg+xml;base64," + new Buffer(fs.readFileSync(module.dir + filename, 'utf8')).toString('base64');
-  }
-
   const enrich = (cmd, cmdId, depth = 0) => {
     console.log(`${depth > 0 ? '  '.repeat(depth)+'↳' : ''}${cmdId} ${module.description ? ' \t\t//' + module.description : ''}`);
 
