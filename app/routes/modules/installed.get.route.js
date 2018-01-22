@@ -16,7 +16,7 @@ module.exports = {
       .filter(module => module && !module.hidden)
       .map(module => Object.assign(
         {},
-        command,
+        module,
         {commands: undefined, handler: undefined, container: undefined, module: undefined}
       ));
   }
