@@ -17,7 +17,6 @@ module.exports = {
 
     if (promise) {
       const result = await promise;
-      console.log(result);
       return result && result.length === 1 ? result[0] : result;
     } else {
       return Boom.badRequest('Command not found!');

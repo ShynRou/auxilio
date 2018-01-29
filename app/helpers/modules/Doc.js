@@ -9,7 +9,6 @@ const Doc = function (doc) {
 };
 
 Doc.toDocs = function (array) {
-  console.log(array);
   return array && array.map(d => new Doc(d));
 };
 

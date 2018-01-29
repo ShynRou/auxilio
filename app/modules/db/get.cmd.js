@@ -1,5 +1,4 @@
 module.exports = async (input, request) => {
-  console.log(request);
   let list = await request.docs.find({ owner: request.user });
   return request.reply({
     data: list,

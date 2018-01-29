@@ -26,12 +26,12 @@ const Rinku = function (config) {
   this.server.register([
     require('inert'),
     require('hapi-auth-jwt2'),
-    require('./plugins/officer/officer'),
     {
       plugin: require('hapi-mongodb'),
       options: config.db,
     },
     require('./plugins/auth/auth.plugin'),
+    require('./plugins/officer/officer'),
   ]).then(() => {
     this.officer = this.server.plugins.officer;
     this.langParser = this.server.plugins.langParser;

@@ -34,7 +34,6 @@ const toSnarkdown = function ( obj, indent = '' ) {
     break;
   }
 
-  console.log(result);
   return result;
 };
 

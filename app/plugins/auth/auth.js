@@ -29,8 +29,6 @@ const Auth = function (server) {
   server.auth.default({strategy: 'jwt', mode: 'try'});
 
   this.users = server.plugins['hapi-mongodb'].db.collection(DB_AUTH_USERS);
-  this.userCount = 0;
-  this.users.count().then(result => this.userCount = result);
   this.groups = server.plugins['hapi-mongodb'].db.collection(DB_AUTH_GROUPS);
 
   // assemble cookie options
@@ -175,7 +173,6 @@ Auth.prototype = {
       }
 
       let entry = await this.users.findOne({_id: userId});
-      console.log(userId, entry);
       if (entry) {
         throw Boom.conflict('userId already taken', {userId: {taken: true}});
       }

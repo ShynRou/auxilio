@@ -1,6 +1,6 @@
 {
   "name": "rinku",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "personal assistant api",
   "main": "app/server.js",
   "scripts": {

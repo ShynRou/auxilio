@@ -11,7 +11,6 @@ Docs.prototype = {
   },
 
   async insert(doc) {
-    console.log(doc);
     if(doc && doc.owner) {
       return await this.collection.insert(doc);
     }

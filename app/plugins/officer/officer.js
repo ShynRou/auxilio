@@ -4,7 +4,7 @@ const CommandContainer = require('../../helpers/modules/CommandContainer');
 const Docs = require('../../helpers/modules/Docs');
 
 
-const officer = { modules: {}, docs: {}, rights: {} };
+const officer = {modules: {}, docs: {}, rights: {}};
 const Sheru = require('sheru');
 officer.sheru = new Sheru({});
 
@@ -20,10 +20,10 @@ officer.register = function (module) {
 
   officer.modules[module.id] = module;
   officer.docs[module.id] = new Docs(server.plugins['hapi-mongodb'].db.collection('_module.' + module.id));
-  officer.rights[module.id] = { core: module.core };
+  officer.rights[module.id] = {core: module.core};
 
   const enrich = (cmd, cmdId, depth = 0) => {
-    console.log(`${depth > 0 ? '  '.repeat(depth)+'↳' : ''}${cmdId} ${module.description ? ' \t\t//' + module.description : ''}`);
+    console.log(`${depth > 0 ? '  '.repeat(depth) + '↳' : ''}${cmdId} ${module.description ? ' \t\t//' + module.description : ''}`);
 
     cmd.module = module;
 
@@ -34,7 +34,7 @@ officer.register = function (module) {
       Object.keys(cmd.commands).forEach(
         (commandId) => {
           cmd.commands[commandId].id = commandId;
-          enrich(cmd.commands[commandId], commandId, depth+1);
+          enrich(cmd.commands[commandId], commandId, depth + 1);
         }
       );
     }
@@ -63,7 +63,7 @@ officer.run = function (request, h, script, input = null) {
     return scriptFunc(input, {
       reply,
       docs: officer.docs[module],
-      user: request.auth.credentials || {id: 'guest', group: !server.plugins.auth.userCount ? ['auth'] : undefined},
+      user: request.auth.credentials || officer.guestUser,
       responseToolkit: h,
       originalRequest: request,
     }).then(() => result).catch(error => {
@@ -98,6 +98,12 @@ var plugin = {
   version: '1.0.0',
   register: function (srv, options) {
     server = srv;
+    srv.plugins.auth.users.count().then(count =>
+      officer.guestUser = {
+        id: 'guest',
+        group: !count ? ['auth'] : undefined,
+      }
+    );
     for (let key in officer) {
       server.expose(key, officer[key]);
     }
