@@ -1,8 +1,8 @@
 module.exports = async (input, request) => {
 
   const search = {};
-  if (input.username) {
-    search._id = new RegExp(`.*${input.username}.*`,'i');
+  if (input.userId) {
+    search._id = new RegExp(`.*${input.userId}.*`,'i');
   }
   if (input.email) {
     search.email = new RegExp(`.*${input.email}.*`,'i');

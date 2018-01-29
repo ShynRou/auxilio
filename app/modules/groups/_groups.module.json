@@ -1,22 +1,17 @@
 {
-  "id": "users",
+  "id": "groups",
   "author": "Dustin 'ShynRou' Hagemeier",
   "rights": {
     "core": true
   },
-  "handler": "users.cmd.js",
+  "handler": "groups.cmd.js",
   "commands": {
     "find": {
       "handler": "find.cmd.js",
       "options": [
         {
-          "short": "u",
-          "long": "userId",
-          "params": 1
-        },
-        {
-          "short": "e",
-          "long": "email",
+          "short": "g",
+          "long": "groupId",
           "params": 1
         }
       ]
@@ -25,36 +20,28 @@
       "handler": "findOne.cmd.js",
       "options": [
         {
-          "short": "u",
-          "long": "userId",
+          "short": "g",
+          "long": "groupId",
           "params": 1
         },
         {
-          "short": "e",
-          "long": "email",
+          "short": "n",
+          "long": "name",
           "params": 1
         }
       ]
-    },
-    "me": {
-      "handler": "me.cmd.js"
     },
     "add": {
       "handler": "add.cmd.js",
       "options": [
         {
-          "short": "u",
-          "long": "userId",
+          "short": "g",
+          "long": "groupId",
           "params": 1
         },
         {
-          "short": "e",
-          "long": "email",
-          "params": 1
-        },
-        {
-          "short": "p",
-          "long": "password",
+          "short": "n",
+          "long": "name",
           "params": 1
         }
       ]

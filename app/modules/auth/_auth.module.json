@@ -16,7 +16,15 @@
     "logout": {
       "handler": "./logout.cmd.js"
     },
+    "passowrd": {
+      "handler": "./password.cmd.js",
+      "options": [
+        {"short": "o", "long": "old", "params": 1},
+        {"short": "n", "long": "new", "params": 1}
+      ]
+    },
     "register": {
+      "group": ["admin", "auth"],
       "handler": "./register.cmd.js",
       "options": [
         {"short": "u", "long": "username", "params": 1},

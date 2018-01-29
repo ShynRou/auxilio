@@ -19,6 +19,9 @@ module.exports = function load(server) {
       if(modules[module.id]) {
         modules[module.id] = Object.assign({},modules[module.id], module);
       }
+      else {
+        module.dir = file.replace('\\', '/').replace(/\/[^/]*$/, '/');
+      }
     });
   }
 

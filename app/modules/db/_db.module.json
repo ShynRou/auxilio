@@ -3,6 +3,7 @@
   "author": "Dustin 'ShynRou' Hagemeier",
   "hidden": true,
   "rights": {
+    "core": true,
     "docs": true
   },
   "handler": "db.cmd.js",
@@ -12,6 +13,9 @@
     },
     "set": {
       "handler": "set.cmd.js"
+    },
+    "test": {
+      "handler": "test.cmd.js"
     }
   }
 }

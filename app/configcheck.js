@@ -27,7 +27,7 @@ const schema = Joi.object({
       path: Joi.string().default('/'),
     }).default(),
     rules: Joi.object({
-      username: Joi.object({
+      userId: Joi.object({
         minLength: Joi.number().default(1),
         maxLength: Joi.number().default(32),
         pattern: Joi.string().optional(),

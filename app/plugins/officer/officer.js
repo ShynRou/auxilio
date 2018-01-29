@@ -63,7 +63,7 @@ officer.run = function (request, h, script, input = null) {
     return scriptFunc(input, {
       reply,
       docs: officer.docs[module],
-      user: request.auth.credentials || {username: 'guest'},
+      user: request.auth.credentials || {id: 'guest', group: !server.plugins.auth.userCount ? ['auth'] : undefined},
       responseToolkit: h,
       originalRequest: request,
     }).then(() => result).catch(error => {

@@ -5,6 +5,7 @@ const Joi = require('joi');
 const JWT = require('jsonwebtoken');
 
 const DB_AUTH_USERS = 'users';
+const DB_AUTH_GROUPS = 'groups';
 
 const Auth = function (server) {
 
@@ -28,6 +29,9 @@ const Auth = function (server) {
   server.auth.default({strategy: 'jwt', mode: 'try'});
 
   this.users = server.plugins['hapi-mongodb'].db.collection(DB_AUTH_USERS);
+  this.userCount = 0;
+  this.users.count().then(result => this.userCount = result);
+  this.groups = server.plugins['hapi-mongodb'].db.collection(DB_AUTH_GROUPS);
 
   // assemble cookie options
 
@@ -51,7 +55,7 @@ Auth.prototype = {
   validateCookie: async function (decoded, request) {
 
     try {
-      let userObj = await this.users.findOne({_id: decoded.username});
+      let userObj = await this.users.findOne({_id: decoded.userId});
 
       if (userObj) {
         let currentTime = Date.now();
@@ -64,12 +68,12 @@ Auth.prototype = {
           const result = {
             isValid: true,
             credentials: {
-              username: userObj._id,
+              id: userObj._id,
+              scope: userObj.groups,
               email: userObj.email,
               avatar: userObj.avatar,
             }
           };
-          console.log(result);
           return result;
         }
       }
@@ -81,18 +85,18 @@ Auth.prototype = {
     }
   },
 
-  validateUsername: function (username) {
+  validateuserId: function (userId) {
 
-    if (!username) {
-      return username;
+    if (!userId) {
+      return userId;
     }
 
     let result = {
-      string: typeof username === 'string',
-      minLength: username.length >= this.server.app.config.auth.rules.username.minLength,
-      maxLength: username.length <= this.server.app.config.auth.rules.username.maxLength,
-      pattern: !this.server.app.config.auth.rules.username.pattern
-      || new RegExp(this.server.app.config.auth.rules.username.pattern).test(username),
+      string: typeof userId === 'string',
+      minLength: userId.length >= this.server.app.config.auth.rules.userId.minLength,
+      maxLength: userId.length <= this.server.app.config.auth.rules.userId.maxLength,
+      pattern: !this.server.app.config.auth.rules.userId.pattern
+      || new RegExp(this.server.app.config.auth.rules.userId.pattern).test(userId),
     };
 
     result.valid = result.string && result.minLength && result.maxLength && result.pattern;
@@ -129,9 +133,9 @@ Auth.prototype = {
   },
 
 
-  login: async function (username, password, request, responseToolkit) {
+  login: async function (userId, password, request, responseToolkit) {
 
-    let entry = await this.users.findOne({_id: username});
+    let entry = await this.users.findOne({_id: userId});
     if (entry && await Bcrypt.compare(password, entry.password)) {
 
       const session = {sid: UUID.v4(), ttl: this.server.app.config.auth.cookie.ttl, t: Date.now()};
@@ -144,7 +148,7 @@ Auth.prototype = {
       this.users.save(entry);
 
 
-      let credentials = {...session, username};
+      let credentials = {...session, userId};
       let token = JWT.sign(credentials, this.server.app.config.auth.cookie.secret);
 
       return responseToolkit
@@ -159,21 +163,21 @@ Auth.prototype = {
         .state(this.server.app.config.auth.cookie.name, token, this.cookieOptions);
     }
     else {
-      throw Boom.unauthorized('username not found');
+      throw Boom.unauthorized('userId and password invalid');
     }
   },
 
-  register: async function (username, password, email, request, responseToolkit) {
+  register: async function (userId, password, email, request, responseToolkit) {
     if (this.users) {
-      let validation = this.validateUsername(username);
+      let validation = this.validateuserId(userId);
       if (!validation || !validation.valid) {
-        throw Boom.badData('username invalid', {username: validation});
+        throw Boom.badData('userId invalid', {userId: validation});
       }
 
-      let entry = await this.users.findOne({_id: username});
-      console.log(username, entry);
+      let entry = await this.users.findOne({_id: userId});
+      console.log(userId, entry);
       if (entry) {
-        throw Boom.conflict('username already taken', {username: {taken: true}});
+        throw Boom.conflict('userId already taken', {userId: {taken: true}});
       }
 
       validation = this.validatePassword(password);
@@ -186,12 +190,20 @@ Auth.prototype = {
         throw Boom.badData('email invalid', {email: validation});
       }
 
+      let groups = [];
+      // IF NO USERS, FIRST IS ADMIN
+      if (await this.users.count() === 0) {
+        await this.groups.update({_id: 'admin'}, {name: 'Admin'}, {upsert: true});
+        groups.push('admin');
+      }
+
       return Bcrypt.hash(password, this.server.app.config.auth.salt).then((hash) => {
           if (hash) {
             entry = {
-              _id: username,
+              _id: userId,
               password: hash,
               email: email,
+              groups: groups,
             };
 
             this.users.insert(entry);
@@ -222,6 +234,17 @@ Auth.prototype = {
     return responseToolkit
       .response({success: false})
       .type('application/json');
+  },
+
+  changePassword: async function (userId, oldPassword, newPassword) {
+    let entry = await this.users.findOne({_id: userId});
+    if (entry && await Bcrypt.compare(oldPassword, entry.password)) {
+      entry.password = await Bcrypt.hash(newPassword, this.server.app.config.auth.salt);
+      this.users.save(entry);
+    }
+    else {
+      throw Boom.unauthorized('userId and password invalid');
+    }
   }
 };
 
