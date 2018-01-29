@@ -1,11 +1,11 @@
 {
   "name": "rinku",
-  "version": "0.1.1",
-  "description": "personal assistant api",
+  "version": "0.1.2",
+  "description": "backend for modularized functionality",
   "main": "app/server.js",
   "scripts": {
     "start": "node start.js",
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "echo \"Error: no test specified\"",
     "serve": "nodemon start.js"
   },
   "repository": {
@@ -18,7 +18,7 @@
     "hapi"
   ],
   "author": "Dustin \"ShynRou\" Hagemeier",
-  "license": "GPL-3.0",
+  "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/ShynRou/rinku/issues"
   },

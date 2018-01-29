@@ -55,7 +55,7 @@ CommandContainer.prototype = {
     }
 
 
-    if (this.canAccess(request.user.group, ...this.module.group, ...this.command.group)) {
+    if (this.canAccess(request.user.scope, ...this.module.group, ...this.command.group)) {
       return this.handler(input, secureRequest);
     } else {
       return request.reply(Boom.unauthorized(`Cannot access "${this.module.id}"`));

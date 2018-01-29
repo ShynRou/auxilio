@@ -101,7 +101,7 @@ var plugin = {
     srv.plugins.auth.users.count().then(count =>
       officer.guestUser = {
         id: 'guest',
-        group: !count ? ['auth'] : undefined,
+        scope: !count ? ['auth'] : undefined,
       }
     );
     for (let key in officer) {
