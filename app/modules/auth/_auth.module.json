@@ -16,7 +16,7 @@
     "logout": {
       "handler": "./logout.cmd.js"
     },
-    "passowrd": {
+    "password": {
       "handler": "./password.cmd.js",
       "options": [
         {"short": "o", "long": "old", "params": 1},

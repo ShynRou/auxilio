@@ -21,6 +21,7 @@ module.exports = function load(server) {
       }
       else {
         module.dir = file.replace('\\', '/').replace(/\/[^/]*$/, '/');
+        modules[module.id] = module;
       }
     });
   }
