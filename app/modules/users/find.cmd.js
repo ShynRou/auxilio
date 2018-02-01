@@ -8,7 +8,9 @@ module.exports = async (input, request) => {
     search.email = new RegExp(`.*${input.email}.*`,'i');
   }
 
+  let entry = await request.originalRequest.server.plugins.auth.users.find(search).toArray();
+
   return request.reply(
-    await request.originalRequest.server.plugins.auth.users.find(search).toArray()
+    transform.omit(['password', 'sessions'], ...entry)
   );
 };

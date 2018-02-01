@@ -9,7 +9,7 @@
     "login": {
       "handler": "./login.cmd.js",
       "options": [
-        {"short": "u", "long": "username", "params": 1},
+        {"short": "u", "long": "userId", "params": 1},
         {"short": "p", "long": "password", "params": 1}
       ]
     },
@@ -27,7 +27,7 @@
       "group": ["admin", "auth"],
       "handler": "./register.cmd.js",
       "options": [
-        {"short": "u", "long": "username", "params": 1},
+        {"short": "u", "long": "userId", "params": 1},
         {"short": "p", "long": "password", "params": 1},
         {"short": "e", "long": "email", "params": 1}
       ]
