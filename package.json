@@ -1,6 +1,6 @@
 {
   "name": "rinku",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "backend for modularized functionality",
   "main": "app/server.js",
   "scripts": {
