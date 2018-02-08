@@ -29,7 +29,7 @@
     "glob": "^7.1.2",
     "good": "^7.3.0",
     "hapi": "^17.2.0",
-    "hapi-auth-cookie": "^7.0.0",
+    "hapi-auth-cookie": "^8.1.0",
     "hapi-auth-jwt2": "salzhrani/hapi-auth-jwt2#v-17",
     "hapi-mongodb": "^7.1.0",
     "inert": "^5.0.1",
