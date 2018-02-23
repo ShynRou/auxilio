@@ -32,6 +32,7 @@
       ]
     },
     "add": {
+      "group": ["admin", "group"],
       "handler": "add.cmd.js",
       "options": [
         {
@@ -42,6 +43,21 @@
         {
           "short": "n",
           "long": "name",
+          "params": 1
+        }
+      ]
+    },
+    "join": {
+      "handler": "join.cmd.js",
+      "options": [
+        {
+          "short": "g",
+          "long": "groupId",
+          "params": 1
+        },
+        {
+          "short": "u",
+          "long": "userId",
           "params": 1
         }
       ]

@@ -7,7 +7,7 @@ module.exports = {
   description: 'simple web CLI',
   handler: {
     directory: {
-      path: 'app/www/cli'
+      path: ['app/www/cli', 'node_modules/micro-down/src'],
     }
   }
 };

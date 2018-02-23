@@ -7,15 +7,15 @@ const Docs = function (collection) {
     }
   };
 
-  this.update = async function (doc) {
-    if (doc && doc._id && doc.owner) {
-      return await collection.update(filter, update);
+  this.update = async function (filter, updateQuery) {
+    if (filter && updateQuery) {
+      return await collection.update(filter, updateQuery);
     }
   };
 
-  this.updateOne = async function (doc) {
+  this.updateOne = async function (doc, updateQuery) {
     if (doc && doc._id) {
-      return await collection.updateOne({ _id: doc._id }, { $set: doc });
+      return await collection.updateOne({ _id: doc._id }, updateQuery || { $set: doc });
     }
   };
 

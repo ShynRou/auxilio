@@ -22,6 +22,7 @@ module.exports = {
         return result && result.length === 1 ? result[0] : result;
       }
       catch (error) {
+        console.log(error);
         return exceptionToBoom(error);
       }
     } else {

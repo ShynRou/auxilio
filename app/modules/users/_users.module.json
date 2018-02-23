@@ -40,6 +40,7 @@
       "handler": "me.cmd.js"
     },
     "add": {
+      "group":  ["admin", "users"],
       "handler": "add.cmd.js",
       "options": [
         {
@@ -55,6 +56,17 @@
         {
           "short": "p",
           "long": "password",
+          "params": 1
+        }
+      ]
+    },
+    "remove": {
+      "group":  ["admin", "users"],
+      "handler": "remove.cmd.js",
+      "options": [
+        {
+          "short": "u",
+          "long": "userId",
           "params": 1
         }
       ]

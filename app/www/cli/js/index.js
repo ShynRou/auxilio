@@ -1,6 +1,9 @@
 const input = document.getElementById('input');
 const log = document.getElementById('log');
 
+const history = [];
+var historyPointer = -1;
+
 const isInt = function (value) {
   if (isNaN(value)) {
     return false;
@@ -9,7 +12,8 @@ const isInt = function (value) {
   return (x | 0) === x;
 };
 
-const toSnarkdown = function ( obj, indent = '' ) {
+const toMarkdown = function (obj, indent = '' ) {
+  indent = ' '.repeat(indent.length);
   if(!obj)
     return null;
 
@@ -24,10 +28,10 @@ const toSnarkdown = function ( obj, indent = '' ) {
     case 'object':
       for (let key in obj) {
         if(isInt(key)) {
-          result += `${toSnarkdown(obj[key], indent + key+'. ')}\n`;
+          result += `${indent}${key}.\n${toMarkdown(obj[key], indent+'  ')}\n`;
         }
         else {
-          result += `${indent}**${key}**:\n${toSnarkdown(obj[key], indent+'- ')}\n`;
+          result += `${indent}- ${key}:\n${toMarkdown(obj[key], indent+'  ')}\n`;
         }
       }
       result = result.substr(0,result.length-1);
@@ -39,6 +43,8 @@ const toSnarkdown = function ( obj, indent = '' ) {
 
 
 const sendMessage = function (message) {
+  history.push(message);
+  historyPointer = history.length;
   return new Promise((resolve,reject) => {
     var request = new XMLHttpRequest();
     request.open("POST","/api");
@@ -58,15 +64,27 @@ input.onkeydown = (event) => {
     var safeInput = input.value.replace(/[<>]/g, '');
     
     input.value = '';
+    log.innerHTML = log.innerHTML + '<h3>&gt; '+safeInput+'</h3>';
     sendMessage(safeInput)
       .then(
         (answer) => {
-          log.innerHTML = log.innerHTML + '<br>' + snarkdown(toSnarkdown(answer));
+          let text = toMarkdown(answer);
+          console.log(text);
+          log.innerHTML = log.innerHTML + '<br>' + parse(text);
+          log.scrollTop = log.scrollHeight;
         })
       .catch(
         (err) => {
           console.error(err)
         }
       );      
+  }
+  else if(event.keyCode === 38) { // UP
+    historyPointer = historyPointer === 0 ? history.length : (historyPointer - 1);
+    input.value = history[historyPointer] || '';
+  }
+  else if(event.keyCode === 40) { // DOWN
+    historyPointer = historyPointer === history.length ? 0 : (historyPointer + 1);
+    input.value = history[historyPointer] || '';
   }
 };
