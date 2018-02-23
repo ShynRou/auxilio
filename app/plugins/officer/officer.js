@@ -47,12 +47,10 @@ officer.register = function (module) {
 };
 
 
-officer.run = function (request, h, script, input = null) {
-  var scriptFunc = officer.sheru.parse(script);
+officer.run = async function (request, h, script, input = null) {
+  let scriptFunc = officer.sheru.parse(script);
   if (scriptFunc) {
-
     const module = script.replace(/\s.*$/gi, '').toLowerCase();
-
     const result = [];
 
     const reply = (data) => {
@@ -66,10 +64,7 @@ officer.run = function (request, h, script, input = null) {
       user: request.auth.credentials || officer.guestUser,
       responseToolkit: h,
       originalRequest: request,
-    }).then(() => result).catch(error => {
-      console.error('error', error);
-      return error;
-    });
+    }).then(() => result);
   }
 };
 

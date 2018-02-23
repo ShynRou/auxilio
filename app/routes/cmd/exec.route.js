@@ -1,5 +1,6 @@
 const Boom = require('boom');
 const Joi = require('joi');
+const exceptionToBoom = require('../../helpers/exceptionToBoom');
 
 module.exports = {
   method: ['GET', 'POST'],
@@ -27,7 +28,13 @@ module.exports = {
     );
 
     if(promise) {
-      return (await promise)[0];
+      try {
+        let result = await promise;
+        return !result || result.length > 1 ? result : result[0];
+      }
+      catch (error) {
+        return exceptionToBoom(error);
+      }
     }
     else {
       return Boom.notFound();
