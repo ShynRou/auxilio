@@ -28,7 +28,7 @@
     "boom": "^7.1.0",
     "glob": "^7.1.2",
     "good": "^8.0.1",
-    "hapi": "^17.2.0",
+    "hapi": "^17.5.5",
     "hapi-auth-cookie": "^7.0.0",
     "hapi-auth-jwt2": "salzhrani/hapi-auth-jwt2#v-17",
     "hapi-mongodb": "^7.1.0",
