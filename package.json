@@ -37,7 +37,7 @@
     "number-to-words": "^1.2.3",
     "sheru": "git+https://github.com/ShynRou/sheru.git",
     "uuid": "^3.1.0",
-    "vm2": "^3.5.2"
+    "vm2": "^3.6.4"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
