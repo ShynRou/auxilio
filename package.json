@@ -31,7 +31,7 @@
     "hapi": "^17.2.0",
     "hapi-auth-cookie": "^7.0.0",
     "hapi-auth-jwt2": "salzhrani/hapi-auth-jwt2#v-17",
-    "hapi-mongodb": "^7.1.0",
+    "hapi-mongodb": "^8.0.0",
     "inert": "^5.0.1",
     "joi": "^13.0.0",
     "number-to-words": "^1.2.3",
