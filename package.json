@@ -32,7 +32,7 @@
     "hapi-auth-cookie": "^7.0.0",
     "hapi-auth-jwt2": "salzhrani/hapi-auth-jwt2#v-17",
     "hapi-mongodb": "^7.1.0",
-    "inert": "^5.0.1",
+    "inert": "^5.1.1",
     "joi": "^13.0.0",
     "number-to-words": "^1.2.3",
     "sheru": "git+https://github.com/ShynRou/sheru.git",
