@@ -1,5 +1,7 @@
+# [DISCONTINUED]
+
 # rinku.js
-[![Greenkeeper badge](https://badges.greenkeeper.io/ShynRou/rinku.svg)](https://greenkeeper.io/)
+
 
 Is a module based backend system using hapijs and mongodb. 
 
